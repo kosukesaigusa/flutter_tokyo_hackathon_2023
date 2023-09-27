@@ -1,0 +1,30 @@
+name: flutter_tokyo_hackathon_2023
+
+repository: https://github.com/kosukesaigusa/flutter_tokyo_hackathon_2023
+
+packages:
+  - packages/**
+
+sdkPath: .fvm/flutter_sdk
+
+scripts:
+  clean:
+    run: melos exec -- "flutter clean"
+
+  pg:
+    run: melos exec -- "flutter pub get"
+
+  clpg:
+    run: melos exec -- "flutter clean && flutter pub get"
+
+  build:
+    run: melos exec -- "flutter pub run build_runner build"
+
+  test:
+    run: melos exec -- "flutter test"
+
+  analyze:
+    run: melos exec -- "flutter analyze ."
+
+  format:
+    run: melos exec -- "dart format ."

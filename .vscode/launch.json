@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug (dev)",
+      "program": "packages/hackathon_app/lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--debug",
+        "--dart-define-from-file=dart_define/dart-define.json"
+      ]
+    },
+    {
+      "name": "Debug (local)",
+      "program": "packages/hackathon_app/lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--debug",
+        "--dart-define=FLAVOR=local",
+        "--dart-define-from-file=dart_define/dev-dart-define.json"
+      ]
+    },
+    {
+      "name": "Debug Functions (local)",
+      "type": "node",
+      "request": "attach",
+      "restart": true,
+      "port": 9229
+    }
+  ]
+}
