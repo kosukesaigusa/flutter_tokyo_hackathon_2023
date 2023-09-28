@@ -24,7 +24,7 @@ class TodosPage extends ConsumerWidget {
     return AuthDependentBuilder(
       onAuthenticated: (userId) {
         return Scaffold(
-          body: ref.watch(todosStreamProvider).when(
+          body: ref.watch(todosStreamProvider(userId)).when(
                 data: (todos) {
                   if (todos.isEmpty) {
                     return const Center(

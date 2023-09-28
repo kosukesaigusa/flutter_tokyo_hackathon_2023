@@ -5,11 +5,15 @@ import '../firestore_documents/todo.dart';
 class TodoRepository {
   final _query = TodoQuery();
 
-  /// [Todo] 一覧を `dueDateTime` の降順で購読する。
-  Stream<List<ReadTodo>> subscribeTodos({required bool descending}) =>
+  /// 指定した [userId] の [Todo] 一覧を `dueDateTime` の降順で購読する。
+  Stream<List<ReadTodo>> subscribeTodos({
+    required String userId,
+    required bool descending,
+  }) =>
       _query.subscribeDocuments(
-        queryBuilder: (query) =>
-            query.orderBy('dueDateTime', descending: descending),
+        queryBuilder: (query) => query
+            .where('userId', isEqualTo: userId)
+            .orderBy('dueDateTime', descending: descending),
       );
 
   /// [Todo] を作成する。

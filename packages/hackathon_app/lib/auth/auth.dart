@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../app_user/app_user.dart';
 import '../exception.dart';
 
 /// [FirebaseAuth] のインスタンスを提供する [Provider].
@@ -30,52 +31,54 @@ final isSignedInProvider = Provider<bool>(
 );
 
 final authServiceProvider = Provider.autoDispose<AuthService>(
-  (ref) => const AuthService(),
+  (ref) => AuthService(appUserService: ref.watch(appUserService)),
 );
 
 /// [FirebaseAuth] の認証関係の振る舞いを記述するモデル。
 class AuthService {
-  const AuthService();
+  const AuthService({required AppUserService appUserService})
+      : _appUserService = appUserService;
+
+  final AppUserService _appUserService;
 
   static final _auth = FirebaseAuth.instance;
-
-  /// [FirebaseAuth] にメールアドレスとパスワードでサインインする。
-  Future<UserCredential> signInWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) =>
-      _auth.signInWithEmailAndPassword(email: email, password: password);
 
   /// [FirebaseAuth] に Google でサインインする。
   ///
   /// https://firebase.flutter.dev/docs/auth/social/#google に従っている。
+  /// 得られた Google アカウントの情報でユーザードキュメントを作成または更新する。
   Future<UserCredential> signInWithGoogle() async {
-    final credential = await _getGoogleAuthCredential();
-    final userCredential = await _auth.signInWithCredential(credential);
+    final result = await _getGoogleAuthCredential();
+    final userCredential = await _auth.signInWithCredential(result.credential);
+    await _appUserService.createOrUpdateUser(
+      userId: userCredential.user!.uid,
+      displayName: result.displayName ?? '',
+      imageUrl: result.imageUrl ?? '',
+    );
     return userCredential;
   }
 
-  /// [FirebaseAuth] からサインアウトする。
-  /// [GoogleSignIn] からもサインアウトする。
-  Future<void> signOut() async {
-    await _auth.signOut();
-    await GoogleSignIn().signOut();
-  }
-
-  /// Google認証から [AuthCredential] を取得する
+  /// Google認証から [AuthCredential] と表示名、プロフィール画像の URL を取得する。
   ///
   /// [GoogleSignIn] ライブラリを使用してユーザーにGoogleでのログインを求め、
   /// 成功した場合はその認証情報からFirebase用の [AuthCredential] オブジェクトを生成して返す
-  Future<AuthCredential> _getGoogleAuthCredential() async {
+  Future<({AuthCredential credential, String? displayName, String? imageUrl})>
+      _getGoogleAuthCredential() async {
     try {
       final googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
         throw const AppException(message: 'キャンセルされました。');
       }
+      final displayName = googleUser.displayName;
+      final imageUrl = googleUser.photoUrl;
       final googleAuth = await googleUser.authentication;
-      return GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+      return (
+        credential: GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        ),
+        displayName: displayName,
+        imageUrl: imageUrl,
       );
     } on PlatformException catch (e) {
       if (e.code == 'network_error') {
@@ -85,5 +88,19 @@ class AuthService {
       }
       throw const AppException(message: 'Google サインインに失敗しました。');
     }
+  }
+
+  /// [FirebaseAuth] にメールアドレスとパスワードでサインインする。
+  Future<UserCredential> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) =>
+      _auth.signInWithEmailAndPassword(email: email, password: password);
+
+  /// [FirebaseAuth] からサインアウトする。
+  /// [GoogleSignIn] からもサインアウトする。
+  Future<void> signOut() async {
+    await _auth.signOut();
+    await GoogleSignIn().signOut();
   }
 }

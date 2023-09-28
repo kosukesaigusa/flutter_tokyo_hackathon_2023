@@ -8,9 +8,12 @@ final todosOrderByStateProvider = StateProvider.autoDispose<TodosOrderBy>(
   (ref) => TodosOrderBy.dueDateTimeDesc,
 );
 
-final todosStreamProvider = StreamProvider.autoDispose<List<ReadTodo>>((ref) {
+/// 指定した `userId` の [Todo] 一覧を購読する [StreamProvider].
+final todosStreamProvider =
+    StreamProvider.family.autoDispose<List<ReadTodo>, String>((ref, userId) {
   final repository = ref.watch(todoRepositoryProvider);
   return repository.subscribeTodos(
+    userId: userId,
     descending:
         ref.watch(todosOrderByStateProvider) == TodosOrderBy.dueDateTimeDesc,
   );

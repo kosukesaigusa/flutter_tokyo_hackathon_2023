@@ -6,7 +6,7 @@ part of 'app_user.dart';
 
 class ReadAppUser {
   const ReadAppUser({
-    required this.appUserId,
+    required this.userId,
     required this.path,
     required this.displayName,
     required this.imageUrl,
@@ -14,7 +14,7 @@ class ReadAppUser {
     required this.updatedAt,
   });
 
-  final String appUserId;
+  final String userId;
 
   final String path;
 
@@ -28,7 +28,7 @@ class ReadAppUser {
 
   factory ReadAppUser._fromJson(Map<String, dynamic> json) {
     return ReadAppUser(
-      appUserId: json['appUserId'] as String,
+      userId: json['userId'] as String,
       path: json['path'] as String,
       displayName: json['displayName'] as String? ?? '',
       imageUrl: json['imageUrl'] as String? ?? '',
@@ -41,7 +41,7 @@ class ReadAppUser {
     final data = ds.data()! as Map<String, dynamic>;
     return ReadAppUser._fromJson(<String, dynamic>{
       ...data,
-      'appUserId': ds.id,
+      'userId': ds.id,
       'path': ds.reference.path,
     });
   }
@@ -97,11 +97,11 @@ final readAppUserCollectionReference = FirebaseFirestore.instance
       toFirestore: (_, __) => throw UnimplementedError(),
     );
 
-/// Provides a reference to a appUser document for reading.
+/// Provides a reference to a user document for reading.
 DocumentReference<ReadAppUser> readAppUserDocumentReference({
-  required String appUserId,
+  required String userId,
 }) =>
-    readAppUserCollectionReference.doc(appUserId);
+    readAppUserCollectionReference.doc(userId);
 
 /// Provides a reference to the appUsers collection for creating.
 final createAppUserCollectionReference = FirebaseFirestore.instance
@@ -111,11 +111,11 @@ final createAppUserCollectionReference = FirebaseFirestore.instance
       toFirestore: (obj, _) => obj.toJson(),
     );
 
-/// Provides a reference to a appUser document for creating.
+/// Provides a reference to a user document for creating.
 DocumentReference<CreateAppUser> createAppUserDocumentReference({
-  required String appUserId,
+  required String userId,
 }) =>
-    createAppUserCollectionReference.doc(appUserId);
+    createAppUserCollectionReference.doc(userId);
 
 /// Provides a reference to the appUsers collection for updating.
 final updateAppUserCollectionReference = FirebaseFirestore.instance
@@ -125,11 +125,11 @@ final updateAppUserCollectionReference = FirebaseFirestore.instance
       toFirestore: (obj, _) => obj.toJson(),
     );
 
-/// Provides a reference to a appUser document for updating.
+/// Provides a reference to a user document for updating.
 DocumentReference<UpdateAppUser> updateAppUserDocumentReference({
-  required String appUserId,
+  required String userId,
 }) =>
-    updateAppUserCollectionReference.doc(appUserId);
+    updateAppUserCollectionReference.doc(userId);
 
 /// Provides a reference to the appUsers collection for deleting.
 final deleteAppUserCollectionReference = FirebaseFirestore.instance
@@ -139,11 +139,11 @@ final deleteAppUserCollectionReference = FirebaseFirestore.instance
       toFirestore: (_, __) => throw UnimplementedError(),
     );
 
-/// Provides a reference to a appUser document for deleting.
+/// Provides a reference to a user document for deleting.
 DocumentReference<DeleteAppUser> deleteAppUserDocumentReference({
-  required String appUserId,
+  required String userId,
 }) =>
-    deleteAppUserCollectionReference.doc(appUserId);
+    deleteAppUserCollectionReference.doc(userId);
 
 /// Manages queries against the appUsers collection.
 class AppUserQuery {
@@ -192,23 +192,23 @@ class AppUserQuery {
 
   /// Fetches a specific [ReadAppUser] document.
   Future<ReadAppUser?> fetchDocument({
-    required String appUserId,
+    required String userId,
     GetOptions? options,
   }) async {
     final ds = await readAppUserDocumentReference(
-      appUserId: appUserId,
+      userId: userId,
     ).get(options);
     return ds.data();
   }
 
   /// Subscribes a specific [AppUser] document.
   Stream<ReadAppUser?> subscribeDocument({
-    required String appUserId,
+    required String userId,
     bool includeMetadataChanges = false,
     bool excludePendingWrites = false,
   }) {
     var streamDs = readAppUserDocumentReference(
-      appUserId: appUserId,
+      userId: userId,
     ).snapshots(includeMetadataChanges: includeMetadataChanges);
     if (excludePendingWrites) {
       streamDs = streamDs.where((ds) => !ds.metadata.hasPendingWrites);
@@ -224,28 +224,28 @@ class AppUserQuery {
 
   /// Sets a [AppUser] document.
   Future<void> set({
-    required String appUserId,
+    required String userId,
     required CreateAppUser createAppUser,
     SetOptions? options,
   }) =>
       createAppUserDocumentReference(
-        appUserId: appUserId,
+        userId: userId,
       ).set(createAppUser, options);
 
   /// Updates a specific [AppUser] document.
   Future<void> update({
-    required String appUserId,
+    required String userId,
     required UpdateAppUser updateAppUser,
   }) =>
       updateAppUserDocumentReference(
-        appUserId: appUserId,
+        userId: userId,
       ).update(updateAppUser.toJson());
 
   /// Deletes a specific [AppUser] document.
   Future<void> delete({
-    required String appUserId,
+    required String userId,
   }) =>
       deleteAppUserDocumentReference(
-        appUserId: appUserId,
+        userId: userId,
       ).delete();
 }
