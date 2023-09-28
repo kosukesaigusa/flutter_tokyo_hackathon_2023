@@ -17,5 +17,5 @@
     "source.organizeImports": true,
     "quickfix.insertSemicolon": true
   },
-  "cSpell.words": ["hackathon"]
+  "cSpell.words": ["hackathon", "todos"]
 }
