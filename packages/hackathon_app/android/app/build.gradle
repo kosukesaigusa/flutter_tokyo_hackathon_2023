@@ -45,7 +45,8 @@ android {
         applicationId "com.kosukesaigusa.flutter_tokyo_hackathon_2023"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
+        // https://qiita.com/irgaly/items/bd2ffe3725424690b856
+        minSdkVersion 26
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
