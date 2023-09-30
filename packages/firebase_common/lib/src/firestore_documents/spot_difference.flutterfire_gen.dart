@@ -9,6 +9,7 @@ class ReadSpotDifference {
     required this.spotDifferenceId,
     required this.path,
     required this.name,
+    required this.thumbnailImageUrl,
     required this.leftImageUrl,
     required this.rightImageUrl,
     required this.pointIds,
@@ -19,6 +20,8 @@ class ReadSpotDifference {
   final String path;
 
   final String name;
+
+  final String thumbnailImageUrl;
 
   final String leftImageUrl;
 
@@ -31,6 +34,7 @@ class ReadSpotDifference {
       spotDifferenceId: json['spotDifferenceId'] as String,
       path: json['path'] as String,
       name: json['name'] as String? ?? '',
+      thumbnailImageUrl: json['thumbnailImageUrl'] as String? ?? '',
       leftImageUrl: json['leftImageUrl'] as String? ?? '',
       rightImageUrl: json['rightImageUrl'] as String? ?? '',
       pointIds: (json['pointIds'] as List<dynamic>?)
@@ -53,12 +57,14 @@ class ReadSpotDifference {
 class CreateSpotDifference {
   const CreateSpotDifference({
     required this.name,
+    required this.thumbnailImageUrl,
     required this.leftImageUrl,
     required this.rightImageUrl,
     required this.pointIds,
   });
 
   final String name;
+  final String thumbnailImageUrl;
   final String leftImageUrl;
   final String rightImageUrl;
   final List<String> pointIds;
@@ -66,6 +72,7 @@ class CreateSpotDifference {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
+      'thumbnailImageUrl': thumbnailImageUrl,
       'leftImageUrl': leftImageUrl,
       'rightImageUrl': rightImageUrl,
       'pointIds': pointIds,
@@ -76,12 +83,14 @@ class CreateSpotDifference {
 class UpdateSpotDifference {
   const UpdateSpotDifference({
     this.name,
+    this.thumbnailImageUrl,
     this.leftImageUrl,
     this.rightImageUrl,
     this.pointIds,
   });
 
   final String? name;
+  final String? thumbnailImageUrl;
   final String? leftImageUrl;
   final String? rightImageUrl;
   final List<String>? pointIds;
@@ -89,6 +98,7 @@ class UpdateSpotDifference {
   Map<String, dynamic> toJson() {
     return {
       if (name != null) 'name': name,
+      if (thumbnailImageUrl != null) 'thumbnailImageUrl': thumbnailImageUrl,
       if (leftImageUrl != null) 'leftImageUrl': leftImageUrl,
       if (rightImageUrl != null) 'rightImageUrl': rightImageUrl,
       if (pointIds != null) 'pointIds': pointIds,
