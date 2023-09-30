@@ -62,27 +62,20 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                   controller: _displayNameTextEditingController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: '表示名を入力',
+                    icon: Icon(Icons.person),
+                    labelText: 'なまえを入力',
                   ),
                 ),
               ),
             ),
             const Gap(32),
             Center(
-              child: ElevatedButton(
-                onPressed: () => Navigator.push<void>(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (context) => CreateRoomUI(userId: widget.userId),
-                    fullscreenDialog: true,
+              child: FilledButton(
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text('ルームを作成する'),
-              ),
-            ),
-            const Gap(32),
-            Center(
-              child: ElevatedButton(
                 onPressed: () async {
                   // ルーム選択なし or 表示名未入力の場合は何もしない
                   final roomId = selectedRoomId.value;
@@ -126,13 +119,38 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
             roomsAsyncValue.when(
               data: (data) {
                 final rooms = data ?? [];
+                final RoomCards = rooms.map((room) {
+                  return _RoomCard(
+                    room: room,
+                    selectedRoomId: selectedRoomId,
+                  );
+                }).toList();
                 return Column(
-                  children: rooms.map((room) {
-                    return _RoomCard(
-                      room: room,
-                      selectedRoomId: selectedRoomId,
-                    );
-                  }).toList(),
+                  children: [
+                    if (rooms.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: Center(
+                          child: FilledButton(
+                            style: OutlinedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            onPressed: () => Navigator.push<void>(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (context) =>
+                                    CreateRoomUI(userId: widget.userId),
+                                fullscreenDialog: true,
+                              ),
+                            ),
+                            child: const Text('ルームを作成する'),
+                          ),
+                        ),
+                      ),
+                    ...RoomCards,
+                  ],
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
