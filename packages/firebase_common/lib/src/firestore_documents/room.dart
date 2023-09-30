@@ -12,6 +12,7 @@ class Room {
   const Room({
     required this.spotDifferenceId,
     required this.roomStatus,
+    required this.maxAnswerCount,
     required this.startAt,
   });
 
@@ -19,6 +20,9 @@ class Room {
 
   @_roomStatusTypeConverter
   final RoomStatus roomStatus;
+
+  @ReadDefault(10)
+  final int maxAnswerCount;
 
   final DateTime? startAt;
 }

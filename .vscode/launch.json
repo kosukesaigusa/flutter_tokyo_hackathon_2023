@@ -6,21 +6,14 @@
       "program": "packages/hackathon_app/lib/main.dart",
       "request": "launch",
       "type": "dart",
-      "args": [
-        "--debug",
-        "--dart-define-from-file=dart_define/dart-define.json"
-      ]
+      "args": ["--debug", "--web-renderer html"]
     },
     {
-      "name": "Debug (local)",
+      "name": "Release (dev)",
       "program": "packages/hackathon_app/lib/main.dart",
       "request": "launch",
       "type": "dart",
-      "args": [
-        "--debug",
-        "--dart-define=FLAVOR=local",
-        "--dart-define-from-file=dart_define/dev-dart-define.json"
-      ]
+      "args": ["--release", "--web-renderer html"]
     },
     {
       "name": "Debug Functions (local)",

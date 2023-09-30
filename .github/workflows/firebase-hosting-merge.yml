@@ -34,7 +34,7 @@ jobs:
       - name: flutter pub get (hackathon_app)
         run: cd packages/hackathon_app && flutter pub get
 
-      - name: flutter build web
+      - name: flutter build web --web-renderer html
         run: |
           cd packages/hackathon_app
           flutter build web
