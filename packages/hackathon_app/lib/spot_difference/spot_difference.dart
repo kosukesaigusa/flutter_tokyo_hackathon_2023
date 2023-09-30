@@ -24,3 +24,11 @@ final correctAnswerPointIdsProvider = StreamProvider.autoDispose
   final repository = ref.watch(pointRepositoryProvider);
   return repository.subscribePoints(spotDifferenceId: spotDifferenceId);
 });
+
+/// 指定した `roomId` の [Answer] のリストを返すStreamProvider
+final answersStreamProvider =
+    StreamProvider.autoDispose.family<List<ReadAnswer>?, String>((ref, roomId) {
+  final repository = ref.watch(answerRepositoryProvider);
+  return repository.subscribeRoomAnswers(roomId: roomId);
+});
+
