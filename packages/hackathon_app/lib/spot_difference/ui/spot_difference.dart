@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:dart_flutter_common/dart_flutter_common.dart';
 import 'package:firebase_common/firebase_common.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,13 @@ class SpotDifferenceRoom extends ConsumerWidget {
       return const SizedBox();
     }
 
+    // TODO nullable外すか検討
+    final answers = ref.watch(answersStreamProvider(roomId)).valueOrNull;
+    if (answers == null) {
+      return const SizedBox();
+    }
+    final myAnswer = answers.firstWhereOrNull((e) => e.answerId == userId);
+
     return SafeArea(
       child: Scaffold(
         body: ref
@@ -53,24 +61,20 @@ class SpotDifferenceRoom extends ConsumerWidget {
                           Expanded(
                             child: Row(
                               children: [
-                                Expanded(
-                                  child: Stack(
-                                    children: [
-                                      _SpotDifference(
-                                        answerPoints: points,
-                                        completedPoints: const [],
-                                        path: spotDifference.leftImageUrl,
-                                      ),
-                                    ],
-                                  ),
+                                _SpotDifference(
+                                  roomId: roomId,
+                                  answerId: userId,
+                                  answerPoints: points,
+                                  completedPointIds: myAnswer?.pointIds ?? [],
+                                  path: spotDifference.leftImageUrl,
                                 ),
                                 const Gap(20),
-                                Expanded(
-                                  child: _SpotDifference(
-                                    answerPoints: points,
-                                    completedPoints: const [],
-                                    path: spotDifference.rightImageUrl,
-                                  ),
+                                _SpotDifference(
+                                  roomId: roomId,
+                                  answerId: userId,
+                                  answerPoints: points,
+                                  completedPointIds: myAnswer?.pointIds ?? [],
+                                  path: spotDifference.rightImageUrl,
                                 ),
                                 Container(
                                   width: 150,
@@ -87,6 +91,7 @@ class SpotDifferenceRoom extends ConsumerWidget {
                                   child: _Ranking(
                                     roomId: roomId,
                                     spotDifference: spotDifference,
+                                    answers: answers,
                                   ),
                                 ),
                               ],
@@ -95,9 +100,16 @@ class SpotDifferenceRoom extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    if (ref.watch(isRestrictedProvider))
-                      // TODO ウィジェット作成
-                      const _RestrictionLoading(),
+                    if (ref.watch(answerStatusProvider) ==
+                        AnswerStatus.restricted)
+                      const _AnswerStatusPopUp(
+                        message: '不正解！\n5秒利用禁止です！',
+                      ),
+                    if (ref.watch(answerStatusProvider) ==
+                        AnswerStatus.celebrated)
+                      const _AnswerStatusPopUp(
+                        message: 'おめでとう！！',
+                      ),
                   ],
                 );
               },
@@ -117,8 +129,10 @@ class SpotDifferenceRoom extends ConsumerWidget {
   }
 }
 
-class _RestrictionLoading extends StatelessWidget {
-  const _RestrictionLoading();
+class _AnswerStatusPopUp extends StatelessWidget {
+  const _AnswerStatusPopUp({required this.message});
+
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -133,20 +147,20 @@ class _RestrictionLoading extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Center(
+            child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '不正解！\n5秒利用禁止です！',
+                    message,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  // TODO タイマー or 煽りアニメーション入れたい
-                  CircularProgressIndicator(),
+                  // TODO タイマー/煽りアニメーション AND おめでとうアニメーション入れたい
+                  const CircularProgressIndicator(),
                 ],
               ),
             ),
@@ -159,18 +173,31 @@ class _RestrictionLoading extends StatelessWidget {
 
 class _SpotDifference extends HookConsumerWidget {
   _SpotDifference({
+    required this.roomId,
+    required this.answerId,
     required this.path,
     required this.answerPoints,
-    required this.completedPoints,
+    required this.completedPointIds,
   });
 
+  final String roomId;
+  final String answerId;
   final String path;
   final List<ReadPoint> answerPoints;
-  final List<ReadPoint> completedPoints;
+  final List<String> completedPointIds;
   final GlobalKey _key = GlobalKey();
   final threshold = 26;
   final defaultDifferenceSize = 300;
   final defaultAnsweredCircleDiameter = 30.0;
+
+  /// answerPointsの中でcompletedPointIdsに含まれるReadPointのリスト
+  List<ReadPoint> get completedPoints {
+    return answerPoints
+        .where(
+          (element) => completedPointIds.contains(element.pointId),
+        )
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -230,49 +257,58 @@ class _SpotDifference extends HookConsumerWidget {
       ],
     );
 
-    return Stack(
-      children: [
-        GestureDetector(
-          onLongPressStart: (details) {
-            // 現在地点と正解のリストを比較
-            //  正解した場合でもそのidが既に自身が選択しているものであれば、早期リターン
+    return Expanded(
+      child: Stack(
+        children: [
+          GestureDetector(
+            onLongPressStart: (details) {
+              // 現在地点と正解のリストを比較
+              //  正解した場合でもそのidが既に自身が選択しているものであれば、早期リターン
 
-            for (final e in scaledAnswerPoints.value) {
-              final scaledThreshold =
-                  threshold * size.value.height / defaultDifferenceSize;
+              for (final e in scaledAnswerPoints.value) {
+                final scaledThreshold =
+                    threshold * size.value.height / defaultDifferenceSize;
 
-              final scaledAnswerOffset = Offset(e.x, e.y);
-              final distance =
-                  (details.localPosition - scaledAnswerOffset).distance;
-              final isNearShowDifferenceOffset = distance < scaledThreshold;
-              print(details.localPosition);
-              print(isNearShowDifferenceOffset);
+                final scaledAnswerOffset = Offset(e.x, e.y);
+                final distance =
+                    (details.localPosition - scaledAnswerOffset).distance;
+                final isNearShowDifferenceOffset = distance < scaledThreshold;
+                print(details.localPosition);
+                print(isNearShowDifferenceOffset);
 
-              //  正解している場合、idを追加&円を描画
-              if (isNearShowDifferenceOffset) {
-                // TODO(masaki): そのidをfirestoreへ更新
-                //  正解した場合、そのOffset周りに円を描画
-                return;
+                //  正解している場合、idを追加&円を描画
+                if (isNearShowDifferenceOffset) {
+                  // TODO(masaki): 「参加する」ボタン押下後に空のAnswerが作成されるようになったらコメント外す
+                  // ref.read(spotDifferenceServiceProvider).addPoint(
+                  //       roomId: roomId,
+                  //       answerId: answerId,
+                  //       pointId: e.pointId,
+                  //     );
+
+                  //  正解した場合、そのOffset周りに円を描画
+                  ref.read(spotDifferenceControllerProvider).celebrate();
+                  return;
+                }
               }
-            }
-            ref.read(spotDifferenceControllerProvider).restrict();
-          },
-          child: GenericImage.rectangle(
-            showDetailOnTap: false,
-            aspectRatio: 560 / 578,
-            imageUrl: path,
-            key: _key,
+              ref.read(spotDifferenceControllerProvider).restrict();
+            },
+            child: GenericImage.rectangle(
+              showDetailOnTap: false,
+              aspectRatio: 560 / 578,
+              imageUrl: path,
+              key: _key,
+            ),
           ),
-        ),
-        ...List.generate(
-          completedPoints.length,
-          (index) => _PositionedCircle(
-            dx: scalePoint(completedPoints[index]).x,
-            dy: scalePoint(completedPoints[index]).y,
-            diameter: answeredCircleDiameter.value,
+          ...List.generate(
+            completedPointIds.length,
+            (index) => _PositionedCircle(
+              dx: scalePoint(completedPoints[index]).x,
+              dy: scalePoint(completedPoints[index]).y,
+              diameter: answeredCircleDiameter.value,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -316,17 +352,28 @@ class _PositionedCircle extends StatelessWidget {
   }
 }
 
-/// 不正解による利用制限を管理するProvider
-final isRestrictedProvider = StateProvider<bool>((_) {
-  return false;
-});
+enum AnswerStatus {
+  /// 不正解による制限中
+  restricted,
+
+  /// 正解によるお祝い中
+  celebrated,
+
+  /// 通常
+  normal,
+}
+
+/// 回答の状況を管理するProvider
+final answerStatusProvider = StateProvider<AnswerStatus>(
+  (_) => AnswerStatus.normal,
+);
 
 final spotDifferenceControllerProvider =
     Provider.autoDispose<SpotDifferenceController>(
   (ref) {
     return SpotDifferenceController(
-      isRestrictedController: ref.watch(
-        isRestrictedProvider.notifier,
+      answerStatusController: ref.watch(
+        answerStatusProvider.notifier,
       ),
     );
   },
@@ -334,24 +381,36 @@ final spotDifferenceControllerProvider =
 
 class SpotDifferenceController {
   SpotDifferenceController({
-    required StateController<bool> isRestrictedController,
-  }) : _isRestrictedController = isRestrictedController;
+    required StateController<AnswerStatus> answerStatusController,
+  }) : _answerStatusController = answerStatusController;
 
-  final StateController<bool> _isRestrictedController;
+  final StateController<AnswerStatus> _answerStatusController;
 
   /// 利用を5秒間制限する
   Future<void> restrict() async {
-    _isRestrictedController.update((state) => true);
+    _answerStatusController.update((state) => AnswerStatus.restricted);
     await Future<void>.delayed(const Duration(seconds: 5));
-    _isRestrictedController.update((state) => false);
+    _answerStatusController.update((state) => AnswerStatus.normal);
+  }
+
+  /// 0.5秒間お祝いダイアログを表示する
+  Future<void> celebrate() async {
+    _answerStatusController.update((state) => AnswerStatus.celebrated);
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    _answerStatusController.update((state) => AnswerStatus.normal);
   }
 }
 
 class _Ranking extends HookConsumerWidget {
-  const _Ranking({required this.roomId, required this.spotDifference});
+  const _Ranking({
+    required this.roomId,
+    required this.spotDifference,
+    required this.answers,
+  });
 
   final String roomId;
   final ReadSpotDifference spotDifference;
+  final List<ReadAnswer> answers;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -364,33 +423,22 @@ class _Ranking extends HookConsumerWidget {
           height: 2,
         ),
         Expanded(
-          child: ref.watch(answersStreamProvider(roomId)).when(
-                data: (answers) {
-                  if (answers == null) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  return ListView.builder(
-                    itemCount: answers.length,
-                    itemBuilder: (context, index) {
-                      final appUsers = ref
-                          .watch(
-                            appUsersFutureProvider(answers[index].answerId),
-                          )
-                          .valueOrNull;
-                      return AnswerUserWidget(
-                        ranking: index + 1,
-                        name: appUsers?.displayName ?? '',
-                        answerPoints: answers[index].pointIds.length,
-                        totalPoints: spotDifference.pointIds.length,
-                      );
-                    },
-                  );
-                },
-                error: (_, __) => const Center(child: Text('回答者の取得に失敗しました。')),
-                loading: () => const Center(child: CircularProgressIndicator()),
-              ),
-        ),
+            child: ListView.builder(
+          itemCount: answers.length,
+          itemBuilder: (context, index) {
+            final appUser = ref
+                .watch(
+                  appUsersFutureProvider(answers[index].answerId),
+                )
+                .valueOrNull;
+            return AnswerUserWidget(
+              ranking: index + 1,
+              name: appUser?.displayName ?? '',
+              answerPoints: answers[index].pointIds.length,
+              totalPoints: spotDifference.pointIds.length,
+            );
+          },
+        ),),
       ],
     );
   }
