@@ -107,15 +107,20 @@ final spotDifferenceServiceProvider =
     Provider.autoDispose<SpotDifferenceService>(
   (ref) => SpotDifferenceService(
     answerRepository: ref.watch(answerRepositoryProvider),
+    roomRepository: ref.watch(roomRepositoryProvider),
   ),
 );
 
 class SpotDifferenceService {
   const SpotDifferenceService({
     required AnswerRepository answerRepository,
-  }) : _answerRepository = answerRepository;
+    required RoomRepository roomRepository,
+  })  : _answerRepository = answerRepository,
+        _roomRepository = roomRepository;
 
   final AnswerRepository _answerRepository;
+
+  final RoomRepository _roomRepository;
 
   /// [Point] を追加する
   Future<void> addPoint({
@@ -129,4 +134,14 @@ class SpotDifferenceService {
       pointId: pointId,
     );
   }
+
+  /// ログイン中のユーザー [userId] が、間違い探しを選択してルームを作成する。
+  Future<void> createRoom({
+    required String spotDifferenceId,
+    required String userId,
+  }) =>
+      _roomRepository.createRoom(
+        spotDifferenceId: spotDifferenceId,
+        createdByAppUserId: userId,
+      );
 }

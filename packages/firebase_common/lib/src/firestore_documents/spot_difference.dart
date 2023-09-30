@@ -13,6 +13,7 @@ class SpotDifference {
     required this.thumbnailImageUrl,
     required this.leftImageUrl,
     required this.rightImageUrl,
+    required this.level,
     required this.pointIds,
   });
 
@@ -27,6 +28,9 @@ class SpotDifference {
 
   @ReadDefault('')
   final String rightImageUrl;
+
+  @ReadDefault(1)
+  final int level;
 
   // NOTE: .length が回答すべきポイント数に一致している。
   @ReadDefault(<String>[])

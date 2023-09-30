@@ -12,6 +12,7 @@ class ReadSpotDifference {
     required this.thumbnailImageUrl,
     required this.leftImageUrl,
     required this.rightImageUrl,
+    required this.level,
     required this.pointIds,
   });
 
@@ -27,6 +28,8 @@ class ReadSpotDifference {
 
   final String rightImageUrl;
 
+  final int level;
+
   final List<String> pointIds;
 
   factory ReadSpotDifference._fromJson(Map<String, dynamic> json) {
@@ -37,6 +40,7 @@ class ReadSpotDifference {
       thumbnailImageUrl: json['thumbnailImageUrl'] as String? ?? '',
       leftImageUrl: json['leftImageUrl'] as String? ?? '',
       rightImageUrl: json['rightImageUrl'] as String? ?? '',
+      level: json['level'] as int? ?? 1,
       pointIds: (json['pointIds'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -60,6 +64,7 @@ class CreateSpotDifference {
     required this.thumbnailImageUrl,
     required this.leftImageUrl,
     required this.rightImageUrl,
+    required this.level,
     required this.pointIds,
   });
 
@@ -67,6 +72,7 @@ class CreateSpotDifference {
   final String thumbnailImageUrl;
   final String leftImageUrl;
   final String rightImageUrl;
+  final int level;
   final List<String> pointIds;
 
   Map<String, dynamic> toJson() {
@@ -75,6 +81,7 @@ class CreateSpotDifference {
       'thumbnailImageUrl': thumbnailImageUrl,
       'leftImageUrl': leftImageUrl,
       'rightImageUrl': rightImageUrl,
+      'level': level,
       'pointIds': pointIds,
     };
   }
@@ -86,6 +93,7 @@ class UpdateSpotDifference {
     this.thumbnailImageUrl,
     this.leftImageUrl,
     this.rightImageUrl,
+    this.level,
     this.pointIds,
   });
 
@@ -93,6 +101,7 @@ class UpdateSpotDifference {
   final String? thumbnailImageUrl;
   final String? leftImageUrl;
   final String? rightImageUrl;
+  final int? level;
   final List<String>? pointIds;
 
   Map<String, dynamic> toJson() {
@@ -101,6 +110,7 @@ class UpdateSpotDifference {
       if (thumbnailImageUrl != null) 'thumbnailImageUrl': thumbnailImageUrl,
       if (leftImageUrl != null) 'leftImageUrl': leftImageUrl,
       if (rightImageUrl != null) 'rightImageUrl': rightImageUrl,
+      if (level != null) 'level': level,
       if (pointIds != null) 'pointIds': pointIds,
     };
   }
