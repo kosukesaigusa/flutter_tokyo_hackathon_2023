@@ -93,11 +93,13 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                 ),
               ),
               Positioned.fill(
-                child: Lottie.asset(
-                  'assets/lottie/confetti.json',
-                  repeat: true,
-                  reverse: true,
-                  animate: true,
+                child: IgnorePointer(
+                  child: Lottie.asset(
+                    'assets/lottie/confetti.json',
+                    repeat: true,
+                    reverse: false,
+                    animate: true,
+                  ),
                 ),
               ),
             ],
