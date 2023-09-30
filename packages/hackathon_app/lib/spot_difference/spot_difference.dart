@@ -34,12 +34,28 @@ final answersStreamProvider =
 });
 
 /// 指定した `roomId` に一致する [Room] を購読する StreamProvider
-final _roomStreamProvider =
-    StreamProvider.autoDispose.family<ReadRoom?, String>(
+final roomStreamProvider = StreamProvider.autoDispose.family<ReadRoom?, String>(
   (ref, roomId) {
     return ref.watch(roomRepositoryProvider).subscribeRoom(roomId: roomId);
   },
 );
+
+/// 指定した `roomId` の [SpotDifference] を購読する [StreamProvider].
+final spotDifferenceStreamProvider = StreamProvider.family
+    .autoDispose<ReadSpotDifference?, String>((ref, roomId) {
+  return ref.watch(roomStreamProvider(roomId)).when(
+        data: (room) {
+          if (room == null) {
+            return Stream.value(null);
+          }
+          return ref
+              .watch(spotDifferenceRepositoryProvider)
+              .subscribeSpotDifference(spotDifferenceId: room.spotDifferenceId);
+        },
+        error: (_, __) => Stream.value(null),
+        loading: () => Stream.value(null),
+      );
+});
 
 /// 指定した `roomId` に一致する [Room] の [CompletedUser] のリストを購読する StreamProvider
 final completedUsersStreamProvider =
@@ -54,7 +70,7 @@ final completedUsersStreamProvider =
 /// 指定した `roomId` に一致する [Room] の開始時刻から現在時刻までの経過時間を返すプロバイダー
 final elapsedTimeProvider = Provider.autoDispose.family<String, String>(
   (ref, roomId) {
-    final room = ref.watch(_roomStreamProvider(roomId)).valueOrNull;
+    final room = ref.watch(roomStreamProvider(roomId)).valueOrNull;
     if (room == null || room.startAt == null) return '';
     final startTime = room.startAt!;
     final elapsedTime = DateTime.now().difference(startTime);

@@ -22,6 +22,7 @@ class Room {
   final RoomStatus roomStatus;
 
   @ReadDefault(10)
+  @CreateDefault(10)
   final int maxAnswerCount;
 
   final DateTime? startAt;
