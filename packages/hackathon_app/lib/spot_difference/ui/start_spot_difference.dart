@@ -55,13 +55,15 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
             child: ListView(
               children: [
                 const Gap(32),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 500),
-                  child: TextField(
-                    controller: _displayNameTextEditingController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: '表示名を入力',
+                UnconstrainedBox(
+                  child: SizedBox(
+                    width: 300,
+                    child: TextField(
+                      controller: _displayNameTextEditingController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: '表示名を入力',
+                      ),
                     ),
                   ),
                 ),
@@ -116,9 +118,7 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                     child: const Text('参加する'),
                   ),
                 ),
-                const Gap(16),
-                // ルーム一覧を表示する
-
+                const Gap(32),
                 Column(
                   children: roomAndSpotDifferences.map((roomAndSpotDifference) {
                     final room = roomAndSpotDifference.$1;
