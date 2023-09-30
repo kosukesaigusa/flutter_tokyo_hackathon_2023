@@ -58,14 +58,12 @@ class CreateRoom {
     required this.createdByAppUserId,
     required this.roomStatus,
     this.maxAnswerCount = 10,
-    this.startAt,
   });
 
   final String spotDifferenceId;
   final String createdByAppUserId;
   final RoomStatus roomStatus;
   final int maxAnswerCount;
-  final DateTime? startAt;
 
   Map<String, dynamic> toJson() {
     return {
@@ -73,7 +71,7 @@ class CreateRoom {
       'createdByAppUserId': createdByAppUserId,
       'roomStatus': _roomStatusTypeConverter.toJson(roomStatus),
       'maxAnswerCount': maxAnswerCount,
-      'startAt': startAt,
+      'startAt': FieldValue.serverTimestamp(),
     };
   }
 }
@@ -84,14 +82,12 @@ class UpdateRoom {
     this.createdByAppUserId,
     this.roomStatus,
     this.maxAnswerCount,
-    this.startAt,
   });
 
   final String? spotDifferenceId;
   final String? createdByAppUserId;
   final RoomStatus? roomStatus;
   final int? maxAnswerCount;
-  final DateTime? startAt;
 
   Map<String, dynamic> toJson() {
     return {
@@ -100,7 +96,7 @@ class UpdateRoom {
       if (roomStatus != null)
         'roomStatus': _roomStatusTypeConverter.toJson(roomStatus!),
       if (maxAnswerCount != null) 'maxAnswerCount': maxAnswerCount,
-      if (startAt != null) 'startAt': startAt,
+      'startAt': FieldValue.serverTimestamp(),
     };
   }
 }

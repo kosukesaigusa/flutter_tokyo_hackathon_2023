@@ -28,6 +28,8 @@ class Room {
   @CreateDefault(10)
   final int maxAnswerCount;
 
+  @AlwaysUseFieldValueServerTimestampWhenCreating()
+  @AlwaysUseFieldValueServerTimestampWhenUpdating()
   final DateTime? startAt;
 }
 
