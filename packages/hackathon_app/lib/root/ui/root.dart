@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../auth/ui/auth_dependent_builder.dart';
-import '../../spot_difference/ui/completed_user.dart';
+import '../../auth/ui/sign_in_anonymously.dart';
 import '../../spot_difference/ui/spot_difference.dart';
 
 final rootPageKey = Provider((ref) => GlobalKey<NavigatorState>());
@@ -31,8 +31,7 @@ class RootPage extends ConsumerWidget {
             userId: userId,
           );
         },
-        onUnAuthenticated: () =>
-            const CompletedUserScreen(roomId: 'a6aylO1igdisuWJZUpcv'),
+        onUnAuthenticated: SignInAnonymouslyPage.new,
       ),
       // body: const SignInAnonymouslyPage(),
     );
