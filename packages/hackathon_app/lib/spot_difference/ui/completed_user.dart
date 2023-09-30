@@ -13,18 +13,28 @@ class CompletedUserScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final completedUsers = ref.watch(completedUsersStreamProvider(roomId));
-    return completedUsers.when(
-      data: (data) => const SafeArea(
-        child: Scaffold(
+    final completedUsersAsyncValue =
+        ref.watch(completedUsersStreamProvider(roomId));
+
+    return completedUsersAsyncValue.when(
+      data: (completedUsers) {
+        final users = completedUsers ?? [];
+        return Scaffold(
           body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: ListView.builder(
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                return Row(
+                  children: [
+                    Text(users[index].completedUserId),
+                  ],
+                );
+              },
             ),
           ),
-        ),
-      ),
-      error: (e, st) => const Text('error'),
+        );
+      },
+      error: (e, st) => Text(e.toString()),
       loading: () => const Text('data'),
     );
   }

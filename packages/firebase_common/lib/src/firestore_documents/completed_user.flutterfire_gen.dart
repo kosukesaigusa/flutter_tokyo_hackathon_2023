@@ -8,7 +8,6 @@ class ReadCompletedUser {
   const ReadCompletedUser({
     required this.completedUserId,
     required this.path,
-    required this.appUserId,
     required this.createdAt,
   });
 
@@ -16,15 +15,12 @@ class ReadCompletedUser {
 
   final String path;
 
-  final String appUserId;
-
   final DateTime? createdAt;
 
   factory ReadCompletedUser._fromJson(Map<String, dynamic> json) {
     return ReadCompletedUser(
       completedUserId: json['completedUserId'] as String,
       path: json['path'] as String,
-      appUserId: json['appUserId'] as String,
       createdAt: (json['createdAt'] as Timestamp?)?.toDate(),
     );
   }
@@ -40,15 +36,10 @@ class ReadCompletedUser {
 }
 
 class CreateCompletedUser {
-  const CreateCompletedUser({
-    required this.appUserId,
-  });
-
-  final String appUserId;
+  const CreateCompletedUser();
 
   Map<String, dynamic> toJson() {
     return {
-      'appUserId': appUserId,
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
@@ -56,16 +47,13 @@ class CreateCompletedUser {
 
 class UpdateCompletedUser {
   const UpdateCompletedUser({
-    this.appUserId,
     this.createdAt,
   });
 
-  final String? appUserId;
   final DateTime? createdAt;
 
   Map<String, dynamic> toJson() {
     return {
-      if (appUserId != null) 'appUserId': appUserId,
       if (createdAt != null) 'createdAt': createdAt,
     };
   }

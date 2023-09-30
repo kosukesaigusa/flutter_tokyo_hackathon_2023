@@ -8,11 +8,10 @@ class CompletedUserRepository {
     required String roomId,
     required String appUserId,
   }) async {
-    await _query.add(
+    await _query.set(
       roomId: roomId,
-      createCompletedUser: CreateCompletedUser(
-        appUserId: appUserId,
-      ),
+      completedUserId: appUserId,
+      createCompletedUser: const CreateCompletedUser(),
     );
   }
 
