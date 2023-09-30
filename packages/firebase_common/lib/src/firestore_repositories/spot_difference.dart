@@ -8,4 +8,9 @@ class SpotDifferenceRepository {
     required String spotDifferenceId,
   }) =>
       _query.subscribeDocument(spotDifferenceId: spotDifferenceId);
+
+  Future<ReadSpotDifference?> fetchSpotDifference({
+    required String spotDifferenceId,
+  }) =>
+      _query.fetchDocument(spotDifferenceId: spotDifferenceId);
 }

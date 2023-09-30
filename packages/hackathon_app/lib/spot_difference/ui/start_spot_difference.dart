@@ -48,10 +48,10 @@ class StartSpotDifferencePageState
 
   @override
   Widget build(BuildContext context) {
-    final roomsAsyncValue = ref.watch(roomsStreamProvider);
+    final roomsAsyncValue = ref.watch(roomAndSpotDifferencesFutureProvider);
     return roomsAsyncValue.when(
-      data: (roomsData) {
-        final rooms = roomsData ?? [];
+      data: (roomAndSpotDifferencesData) {
+        final roomAndSpotDifferences = roomAndSpotDifferencesData ?? [];
         return Center(
           child: Padding(
             padding: const EdgeInsets.all(100),
@@ -86,14 +86,15 @@ class StartSpotDifferencePageState
                   color: Colors.amber,
                   height: 500,
                   child: ListView.builder(
-                    itemCount: rooms.length,
+                    itemCount: roomAndSpotDifferences.length,
                     itemBuilder: (context, index) {
-                      final room = rooms[index];
+                      final room = roomAndSpotDifferences[index].$1;
+                      final spotDifference = roomAndSpotDifferences[index].$2;
                       return Row(
                         children: [
                           // TODO
                           // 画像表示 SpotDifferenceの right or left imageURLでよさそう
-
+                          Image.network(spotDifference.leftImageUrl),
                           // 名前表示
                           Text(room.roomStatus.toString()),
                         ],
