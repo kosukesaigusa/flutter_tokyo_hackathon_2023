@@ -6,6 +6,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../auth/ui/auth_dependent_builder.dart';
+import '../../spot_difference/ui/spot_difference_page.dart';
 import '../todos.dart';
 import 'todos_controller.dart';
 
@@ -15,6 +16,7 @@ class TodosPage extends ConsumerWidget {
 
   /// [AutoRoute] で指定するパス文字列。
   static const path = 'todos';
+  static const test = 'test';
 
   /// [TodosPage] に遷移する際に `context.router.pushNamed` で指定する文字列。
   static const location = path;
@@ -23,6 +25,22 @@ class TodosPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return AuthDependentBuilder(
       onAuthenticated: (userId) {
+        return Center(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push<void>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ShowDifferencePage(),
+                ),
+              );
+            },
+            child: const Text(
+              '間違い探しへ',
+            ),
+          ),
+        );
+
         return Scaffold(
           body: ref.watch(todosStreamProvider(userId)).when(
                 data: (todos) {
