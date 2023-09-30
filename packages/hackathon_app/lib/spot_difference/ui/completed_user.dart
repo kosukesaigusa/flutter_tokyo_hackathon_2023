@@ -25,6 +25,7 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
     super.initState();
     Future(
       () async {
+        // 上位10位で決め打ちしている
         for (var i = 0; i < 10; i++) {
           await Future<void>.delayed(const Duration(seconds: 1));
           setState(() {
