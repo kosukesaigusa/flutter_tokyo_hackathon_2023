@@ -13,20 +13,20 @@ class CompletedUserScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final completedUsersAsyncValue =
-        ref.watch(completedUsersStreamProvider(roomId));
+    final completedAppUsersAsyncValue =
+        ref.watch(completedAppUsersFutureProvider(roomId));
 
-    return completedUsersAsyncValue.when(
-      data: (completedUsers) {
-        final users = completedUsers ?? [];
+    return completedAppUsersAsyncValue.when(
+      data: (appUsers) {
         return Scaffold(
           body: Center(
             child: ListView.builder(
-              itemCount: users.length,
+              itemCount: appUsers.length,
               itemBuilder: (context, index) {
+                final appUser = appUsers[index];
                 return Row(
                   children: [
-                    Text(users[index].completedUserId),
+                    Text(appUser?.displayName ?? ''),
                   ],
                 );
               },
@@ -35,7 +35,7 @@ class CompletedUserScreen extends ConsumerWidget {
         );
       },
       error: (e, st) => Text(e.toString()),
-      loading: () => const Text('data'),
+      loading: () => const Text('loading'),
     );
   }
 }
