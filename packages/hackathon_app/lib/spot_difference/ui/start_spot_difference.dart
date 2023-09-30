@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../auth/ui/auth_controller.dart';
+import '../../loading/ui/loading.dart';
+import '../spot_difference.dart';
 
 // TODO
 // - roomsを購読(status:pending or playing)
@@ -46,10 +47,11 @@ class StartSpotDifferencePageState
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: 240,
-        child: Column(
+    final roomsAsyncValue = ref.watch(roomsStreamProvider);
+    return roomsAsyncValue.when(
+      data: (roomsData) {
+        final rooms = roomsData ?? [];
+        return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
@@ -60,20 +62,53 @@ class StartSpotDifferencePageState
               ),
             ),
             const Gap(32),
-            Center(
-              child: ElevatedButton(
-                onPressed: () =>
-                    ref.read(authControllerProvider).signInAnonymously(
-                          displayName: _displayNameTextEditingController.text,
-                          // TODO: 適当な画像を選ばせると良さそう
-                          // imageUrl: '',
-                        ),
-                child: const Text('サインイン'),
+            // ルーム一覧を表示する
+            Expanded(
+              child: ListView.builder(
+                itemCount: rooms.length,
+                itemBuilder: (context, index) {
+                  final room = rooms[index];
+                  return ListTile(
+                    title: Text(room.roomStatus.toString()),
+                  );
+                },
               ),
             ),
           ],
-        ),
-      ),
+        );
+      },
+      loading: () => const OverlayLoading(),
+      error: (error, stackTrace) => const Text('エラーが発生しました'),
     );
+
+    // return Center(
+    //   child: SizedBox(
+    //     width: 240,
+    //     child: Column(
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       children: [
+    //         TextField(
+    //           controller: _displayNameTextEditingController,
+    //           decoration: const InputDecoration(
+    //             border: OutlineInputBorder(),
+    //             labelText: '表示名を入力',
+    //           ),
+    //         ),
+    //         const Gap(32),
+    //         Center(
+    //           child: ElevatedButton(
+    //             onPressed: () =>
+    //                 ref.read(authControllerProvider).signInAnonymously(
+    //                       displayName: _displayNameTextEditingController.text,
+    //                       // TODO: 適当な画像を選ばせると良さそう
+    //                       // imageUrl: '',
+    //                     ),
+    //             child: const Text('サインイン'),
+    //           ),
+    //         ),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 }
