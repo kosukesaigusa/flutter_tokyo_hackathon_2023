@@ -24,22 +24,17 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
     super.initState();
     Future(
       () async {
-        final users = ref
-                .watch(completedAppUsersFutureProvider(widget.roomId))
-                .valueOrNull ??
-            [];
-        await Future.forEach(users, (user) async {
+        for (var i = 0; i < 10; i++) {
           await Future<void>.delayed(const Duration(seconds: 1));
-          print('$user');
           setState(() {
             _controllers.add(
               AnimationController(
                 vsync: this,
-                duration: const Duration(seconds: 1),
+                duration: const Duration(seconds: 2),
               )..forward(),
             );
           });
-        });
+        }
       },
     );
   }
@@ -65,22 +60,29 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
             ),
             child: Center(
               child: ListView.builder(
+                reverse: true,
                 itemCount: _controllers.length,
                 itemBuilder: (context, index) {
-                  final appUser = appUsers[index];
-                  return Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Center(
-                      child: FadeTransition(
-                        opacity: _controllers[index],
-                        child: _RankingCard(
-                          imageUrl: appUser?.imageUrl,
-                          displayName: appUser?.displayName,
-                          index: index,
+                  final appUser = appUsers.safeGet(index);
+                  final rank = appUsers.length - (index + 1);
+                  if (appUser != null) {
+                    final animateController = _controllers[index];
+                    return Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Center(
+                        child: FadeTransition(
+                          opacity: animateController,
+                          child: _RankingCard(
+                            imageUrl: appUser.imageUrl,
+                            displayName: appUser.displayName,
+                            index: rank,
+                          ),
                         ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    return const SizedBox();
+                  }
                 },
               ),
             ),
@@ -117,7 +119,7 @@ class _RankingCardState extends State<_RankingCard>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     )..forward();
 
@@ -181,5 +183,14 @@ class _RankingCardState extends State<_RankingCard>
         ),
       ),
     );
+  }
+}
+
+extension SafeIndexAccess<T> on List<T> {
+  T? safeGet(int index) {
+    if (index >= 0 && index < length) {
+      return this[index];
+    }
+    return null;
   }
 }

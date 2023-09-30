@@ -59,11 +59,14 @@ final completedAppUsersFutureProvider =
     final completedUsers =
         ref.watch(completedUsersStreamProvider(roomId)).valueOrNull ?? [];
     return Future.wait(
-      completedUsers.map(
-        (user) async {
-          return appUserRepository.fetch(userId: user.completedUserId);
-        },
-      ),
+      completedUsers
+          .map(
+            (user) async {
+              return appUserRepository.fetch(userId: user.completedUserId);
+            },
+          )
+          .toList()
+          .reversed,
     );
   },
 );
