@@ -8,7 +8,7 @@ import '../../app_ui_feedback_controller.dart';
 import '../../app_user/app_user.dart';
 import '../spot_difference.dart';
 import 'create_room_dialog.dart';
-import 'spot_difference.dart';
+import 'waiting_room.dart';
 
 // TODO
 // - roomsを購読(status:pending or playing)
@@ -107,7 +107,7 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                           );
                       await Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute<void>(
-                          builder: (context) => SpotDifferenceRoom(
+                          builder: (context) => RoomStatusSwitchingUI(
                             userId: widget.userId,
                             roomId: roomId,
                           ),
