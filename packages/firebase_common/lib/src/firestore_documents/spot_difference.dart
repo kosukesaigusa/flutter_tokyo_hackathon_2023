@@ -10,6 +10,7 @@ part 'spot_difference.flutterfire_gen.dart';
 class SpotDifference {
   const SpotDifference({
     required this.name,
+    required this.thumbnailImageUrl,
     required this.leftImageUrl,
     required this.rightImageUrl,
     required this.pointIds,
@@ -17,6 +18,9 @@ class SpotDifference {
 
   @ReadDefault('')
   final String name;
+
+  @ReadDefault('')
+  final String thumbnailImageUrl;
 
   @ReadDefault('')
   final String leftImageUrl;

@@ -7,12 +7,16 @@ class RoomRepository {
   Stream<ReadRoom?> subscribeRoom({required String roomId}) =>
       _query.subscribeDocument(roomId: roomId);
 
-  /// 指定した [spotDifferenceId] を持つ [Room] を作成する
-  Future<void> createRoom({required String spotDifferenceId}) async {
+  /// [createdByAppUserId] が、指定した [spotDifferenceId] を持つ [Room] を作成する。
+  Future<void> createRoom({
+    required String spotDifferenceId,
+    required String createdByAppUserId,
+  }) async {
     await _query.add(
       createRoom: CreateRoom(
         spotDifferenceId: spotDifferenceId,
         roomStatus: RoomStatus.pending,
+        createdByAppUserId: createdByAppUserId,
       ),
     );
   }

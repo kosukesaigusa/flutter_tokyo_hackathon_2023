@@ -9,6 +9,7 @@ class ReadRoom {
     required this.roomId,
     required this.path,
     required this.spotDifferenceId,
+    required this.createdByAppUserId,
     required this.roomStatus,
     required this.maxAnswerCount,
     required this.startAt,
@@ -19,6 +20,8 @@ class ReadRoom {
   final String path;
 
   final String spotDifferenceId;
+
+  final String createdByAppUserId;
 
   final RoomStatus roomStatus;
 
@@ -31,6 +34,7 @@ class ReadRoom {
       roomId: json['roomId'] as String,
       path: json['path'] as String,
       spotDifferenceId: json['spotDifferenceId'] as String,
+      createdByAppUserId: json['createdByAppUserId'] as String,
       roomStatus:
           _roomStatusTypeConverter.fromJson(json['roomStatus'] as String),
       maxAnswerCount: json['maxAnswerCount'] as int? ?? 10,
@@ -51,12 +55,14 @@ class ReadRoom {
 class CreateRoom {
   const CreateRoom({
     required this.spotDifferenceId,
+    required this.createdByAppUserId,
     required this.roomStatus,
     this.maxAnswerCount = 10,
     this.startAt,
   });
 
   final String spotDifferenceId;
+  final String createdByAppUserId;
   final RoomStatus roomStatus;
   final int maxAnswerCount;
   final DateTime? startAt;
@@ -64,6 +70,7 @@ class CreateRoom {
   Map<String, dynamic> toJson() {
     return {
       'spotDifferenceId': spotDifferenceId,
+      'createdByAppUserId': createdByAppUserId,
       'roomStatus': _roomStatusTypeConverter.toJson(roomStatus),
       'maxAnswerCount': maxAnswerCount,
       'startAt': startAt,
@@ -74,12 +81,14 @@ class CreateRoom {
 class UpdateRoom {
   const UpdateRoom({
     this.spotDifferenceId,
+    this.createdByAppUserId,
     this.roomStatus,
     this.maxAnswerCount,
     this.startAt,
   });
 
   final String? spotDifferenceId;
+  final String? createdByAppUserId;
   final RoomStatus? roomStatus;
   final int? maxAnswerCount;
   final DateTime? startAt;
@@ -87,6 +96,7 @@ class UpdateRoom {
   Map<String, dynamic> toJson() {
     return {
       if (spotDifferenceId != null) 'spotDifferenceId': spotDifferenceId,
+      if (createdByAppUserId != null) 'createdByAppUserId': createdByAppUserId,
       if (roomStatus != null)
         'roomStatus': _roomStatusTypeConverter.toJson(roomStatus!),
       if (maxAnswerCount != null) 'maxAnswerCount': maxAnswerCount,

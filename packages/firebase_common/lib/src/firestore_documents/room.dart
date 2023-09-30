@@ -11,12 +11,15 @@ part 'room.flutterfire_gen.dart';
 class Room {
   const Room({
     required this.spotDifferenceId,
+    required this.createdByAppUserId,
     required this.roomStatus,
     required this.maxAnswerCount,
     required this.startAt,
   });
 
   final String spotDifferenceId;
+
+  final String createdByAppUserId;
 
   @_roomStatusTypeConverter
   final RoomStatus roomStatus;

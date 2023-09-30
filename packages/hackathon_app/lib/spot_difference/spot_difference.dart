@@ -1,6 +1,7 @@
 import 'package:firebase_common/firebase_common.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../exception.dart';
 import '../firestore_repository.dart';
 
 final _userAnswerStreamProvider = StreamProvider.autoDispose
@@ -40,21 +41,23 @@ final roomStreamProvider = StreamProvider.autoDispose.family<ReadRoom?, String>(
   },
 );
 
-/// 指定した `roomId` の [SpotDifference] を購読する [StreamProvider].
-final spotDifferenceStreamProvider = StreamProvider.family
-    .autoDispose<ReadSpotDifference?, String>((ref, roomId) {
-  return ref.watch(roomStreamProvider(roomId)).when(
-        data: (room) {
-          if (room == null) {
-            return Stream.value(null);
-          }
-          return ref
-              .watch(spotDifferenceRepositoryProvider)
-              .subscribeSpotDifference(spotDifferenceId: room.spotDifferenceId);
-        },
-        error: (_, __) => Stream.value(null),
-        loading: () => Stream.value(null),
-      );
+/// [SpotDifference] 全件を購読する [StreamProvider].
+final allSpotDifferencesStreamProvider =
+    StreamProvider.autoDispose<List<ReadSpotDifference>>(
+  (ref) =>
+      ref.watch(spotDifferenceRepositoryProvider).subscribeSpotDifferences(),
+);
+
+/// 指定した `roomId` の [SpotDifference] を購読する [FutureProvider].
+final spotDifferenceFutureProvider = FutureProvider.family
+    .autoDispose<ReadSpotDifference?, String>((ref, roomId) async {
+  final room = await ref.watch(roomStreamProvider(roomId).future);
+  if (room == null) {
+    throw const AppException(message: '間違い探しルームの取得に失敗しました。');
+  }
+  return ref
+      .watch(spotDifferenceRepositoryProvider)
+      .fetchSpotDifference(spotDifferenceId: room.spotDifferenceId);
 });
 
 /// 指定した `roomId` に一致する [Room] の [CompletedUser] のリストを購読する StreamProvider
@@ -91,7 +94,9 @@ final completedAppUsersFutureProvider =
 final elapsedTimeProvider = Provider.autoDispose.family<String, String>(
   (ref, roomId) {
     final room = ref.watch(roomStreamProvider(roomId)).valueOrNull;
-    if (room == null || room.startAt == null) return '';
+    if (room == null || room.startAt == null) {
+      return '';
+    }
     final startTime = room.startAt!;
     final elapsedTime = DateTime.now().difference(startTime);
     return elapsedTime.toString().split('.').first;

@@ -62,7 +62,7 @@ class SpotDifferenceRoom extends ConsumerWidget {
 
     return SafeArea(
       child: Scaffold(
-        body: ref.watch(spotDifferenceStreamProvider(roomId)).when(
+        body: ref.watch(spotDifferenceFutureProvider(roomId)).when(
               data: (spotDifference) {
                 if (spotDifference == null) {
                   return const Center(child: CircularProgressIndicator());
