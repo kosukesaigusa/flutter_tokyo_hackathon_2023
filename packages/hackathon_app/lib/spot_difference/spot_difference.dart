@@ -17,3 +17,10 @@ final answeredPointIdsProvider = Provider.autoDispose
     .family<List<String>, ({String roomId, String appUserId})>((ref, param) {
   return ref.watch(_answerStreamProvider(param)).valueOrNull?.pointIds ?? [];
 });
+
+/// 指定した [SpotDifference] の答えの [Point] のリストを購読する StreamProvider
+final correctAnswerPointIdsProvider = StreamProvider.autoDispose
+    .family<List<ReadPoint>?, String>((ref, spotDifferenceId) {
+  final repository = ref.watch(pointRepositoryProvider);
+  return repository.subscribePoints(spotDifferenceId: spotDifferenceId);
+});
