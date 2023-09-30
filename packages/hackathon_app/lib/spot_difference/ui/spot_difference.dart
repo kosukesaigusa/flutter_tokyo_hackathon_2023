@@ -411,15 +411,17 @@ class _Ranking extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    answers.sort((a, b) {
-      if (a.pointIds.length > b.pointIds.length) {
-        return -1;
-      } else if (a.pointIds.length < b.pointIds.length) {
-        return 1;
-      } else {
-        return a.updatedAt!.compareTo(b.updatedAt!);
-      }
-    });
+    if (answers.isNotEmpty) {
+      answers.sort((a, b) {
+        if (a.pointIds.length > b.pointIds.length) {
+          return -1;
+        } else if (a.pointIds.length < b.pointIds.length) {
+          return 1;
+        } else {
+          return a.updatedAt!.compareTo(b.updatedAt!);
+        }
+      });
+    }
 
     return Container(
       width: 150,
