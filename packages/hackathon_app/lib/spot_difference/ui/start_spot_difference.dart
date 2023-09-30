@@ -123,6 +123,7 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                     itemBuilder: (context, index) {
                       final room = roomAndSpotDifferences[index].$1;
                       final spotDifference = roomAndSpotDifferences[index].$2;
+                      final isSelectRoom = selectedRoomId.value == room.roomId;
                       return Column(
                         children: [
                           InkWell(
@@ -139,9 +140,21 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                                     height: 300,
                                     fit: BoxFit.cover,
                                   ),
-                                  const Positioned.fill(
+                                  Positioned.fill(
                                     child: ColoredBox(
-                                      color: Color.fromARGB(106, 157, 157, 157),
+                                      color: isSelectRoom
+                                          ? const Color.fromARGB(
+                                              158,
+                                              226,
+                                              218,
+                                              61,
+                                            )
+                                          : const Color.fromARGB(
+                                              106,
+                                              157,
+                                              157,
+                                              157,
+                                            ),
                                     ),
                                   ),
                                   Padding(
@@ -152,7 +165,7 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                                     child: Text(
                                       spotDifference.name,
                                       style: const TextStyle(
-                                        fontSize: 24,
+                                        fontSize: 32,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                       ),
