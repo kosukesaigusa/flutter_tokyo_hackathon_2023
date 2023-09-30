@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../app_ui_feedback_controller.dart';
+import '../../app_user/app_user.dart';
 import '../../loading/ui/loading.dart';
 import '../spot_difference.dart';
 import 'create_room_dialog.dart';
@@ -84,18 +85,24 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                     onPressed: () async {
                       // ルーム選択なし or 表示名未入力の場合は何もしない
                       final roomId = selectedRoomId.value;
+                      final displayName =
+                          _displayNameTextEditingController.text;
                       if (roomId == null) {
                         ref
                             .read(appUIFeedbackControllerProvider)
                             .showSnackBar('間違い探しルームを選択してください');
                         return;
                       }
-                      if (_displayNameTextEditingController.text.isEmpty) {
+                      if (displayName.isEmpty) {
                         ref
                             .read(appUIFeedbackControllerProvider)
                             .showSnackBar('表示名を入力してください');
                         return;
                       }
+                      await ref.read(appUserService).createOrUpdateUser(
+                            userId: widget.userId,
+                            displayName: displayName,
+                          );
                       await Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute<void>(
                           builder: (context) => SpotDifferenceRoom(
