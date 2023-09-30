@@ -28,7 +28,7 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
       () async {
         // 上位10位で決め打ちしている
         for (var i = 0; i < 10; i++) {
-          await Future<void>.delayed(const Duration(seconds: 1));
+          await Future<void>.delayed(const Duration(seconds: 2));
           setState(() {
             _controllers.add(
               AnimationController(
@@ -63,33 +63,47 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                     ],
                   ),
                 ),
-                child: Center(
-                  child: ListView.builder(
-                    reverse: true,
-                    itemCount: _controllers.length,
-                    itemBuilder: (context, index) {
-                      final appUser = appUsers.safeGet(index);
-                      final rank = appUsers.length - (index + 1);
-                      if (appUser != null) {
-                        final animateController = _controllers[index];
-                        return Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Center(
-                            child: FadeTransition(
-                              opacity: animateController,
-                              child: _RankingCard(
-                                imageUrl: appUser.imageUrl,
-                                displayName: appUser.displayName,
-                                index: rank,
+                child: Stack(
+                  children: [
+                    const Center(
+                      child: Text(
+                        '結果発表',
+                        style: TextStyle(
+                          fontSize: 300,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: ListView.builder(
+                        reverse: true,
+                        itemCount: _controllers.length,
+                        itemBuilder: (context, index) {
+                          final appUser = appUsers.safeGet(index);
+                          final rank = appUsers.length - (index + 1);
+                          if (appUser != null) {
+                            final animateController = _controllers[index];
+                            return Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Center(
+                                child: FadeTransition(
+                                  opacity: animateController,
+                                  child: _RankingCard(
+                                    imageUrl: appUser.imageUrl,
+                                    displayName: appUser.displayName,
+                                    index: rank,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      } else {
-                        return const SizedBox();
-                      }
-                    },
-                  ),
+                            );
+                          } else {
+                            return const SizedBox();
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Positioned.fill(
@@ -131,6 +145,7 @@ class _RankingCardState extends State<_RankingCard>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _animation;
+  late final Color _backgroundColor;
 
   @override
   void initState() {
@@ -143,6 +158,17 @@ class _RankingCardState extends State<_RankingCard>
     _animation = Tween<double>(begin: 200, end: 0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOut),
     );
+
+    switch (widget.index) {
+      case 0:
+        _backgroundColor = const Color(0xFFFFD700);
+      case 1:
+        _backgroundColor = const Color(0xFFC0C0C0);
+      case 2:
+        _backgroundColor = const Color(0xFFCD7F32);
+      default:
+        _backgroundColor = Colors.grey[100]!;
+    }
   }
 
   @override
@@ -167,7 +193,7 @@ class _RankingCardState extends State<_RankingCard>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: _backgroundColor,
           borderRadius: BorderRadius.circular(10),
         ),
         width: 400,
