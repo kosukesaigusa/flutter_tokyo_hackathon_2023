@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Read Flutter SDK version
         run: echo "FLUTTER_VERSION=$(jq -r '.flutterSdkVersion' .fvm/fvm_config.json)" >> $GITHUB_ENV
         shell: bash
@@ -29,10 +32,11 @@ jobs:
       - name: flutter pub get (hackathon_app)
         run: cd packages/hackathon_app && flutter pub get
 
-      - uses: actions/checkout@v3
-      - run: |
+      - name: flutter build web
+        run: |
           cd packages/hackathon_app
           flutter build web
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
