@@ -76,23 +76,10 @@ class SpotDifferenceRoom extends ConsumerWidget {
                                   completedPointIds: myAnswer?.pointIds ?? [],
                                   path: spotDifference.rightImageUrl,
                                 ),
-                                Container(
-                                  width: 150,
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      left: BorderSide(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .outlineVariant,
-                                        width: 2, // ボーダーの太さ
-                                      ),
-                                    ),
-                                  ),
-                                  child: _Ranking(
-                                    roomId: roomId,
-                                    spotDifference: spotDifference,
-                                    answers: answers,
-                                  ),
+                                _Ranking(
+                                  roomId: roomId,
+                                  spotDifference: spotDifference,
+                                  answers: answers,
                                 ),
                               ],
                             ),
@@ -414,32 +401,68 @@ class _Ranking extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        ProgressTimeWidget(
-          startTime: DateTime.now(),
+    answers.sort((a, b) {
+      if (a.pointIds.length > b.pointIds.length) {
+        return -1;
+      } else if (a.pointIds.length < b.pointIds.length) {
+        return 1;
+      } else {
+        return a.updatedAt!.compareTo(b.updatedAt!);
+      }
+    });
+
+    return Container(
+      width: 150,
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
-        const Divider(
-          height: 2,
-        ),
-        Expanded(
+      ),
+      child: Column(
+        children: [
+          ref.watch(roomStreamProvider(roomId)).when(
+                data: (room) {
+                  if (room == null || room.startAt == null) {
+                    return const SizedBox();
+                  }
+                  return ProgressTimeWidget(
+                    startTime: room.startAt!,
+                  );
+                },
+                error: (_, __) => const SizedBox(
+                  height: 50,
+                  child: Center(child: Text('開始時間の取得に失敗しました。')),
+                ),
+                loading: () => const SizedBox(
+                  height: 50,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              ),
+          const Divider(
+            height: 2,
+          ),
+          Expanded(
             child: ListView.builder(
-          itemCount: answers.length,
-          itemBuilder: (context, index) {
-            final appUser = ref
-                .watch(
-                  appUsersFutureProvider(answers[index].answerId),
-                )
-                .valueOrNull;
-            return AnswerUserWidget(
-              ranking: index + 1,
-              name: appUser?.displayName ?? '',
-              answerPoints: answers[index].pointIds.length,
-              totalPoints: spotDifference.pointIds.length,
-            );
-          },
-        ),),
-      ],
+              itemCount: answers.length,
+              itemBuilder: (context, index) {
+                final appUser = ref
+                    .watch(
+                      appUsersFutureProvider(answers[index].answerId),
+                    )
+                    .valueOrNull;
+                return AnswerUserWidget(
+                  ranking: index + 1,
+                  name: appUser?.displayName ?? '',
+                  answerPoints: answers[index].pointIds.length,
+                  totalPoints: spotDifference.pointIds.length,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
