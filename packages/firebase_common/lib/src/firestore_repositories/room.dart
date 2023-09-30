@@ -17,12 +17,15 @@ class RoomRepository {
     );
   }
 
-  /// 指定した [roomId] に一致する [Room] の roomStatus を completed に変更する
-  Future<void> completeRoom({required String roomId}) async {
+  /// 指定した [roomId] に一致する [Room] の roomStatus を変更する
+  Future<void> updateRoom({
+    required String roomId,
+    required RoomStatus roomStatus,
+  }) async {
     await _query.update(
       roomId: roomId,
-      updateRoom: const UpdateRoom(
-        roomStatus: RoomStatus.completed,
+      updateRoom: UpdateRoom(
+        roomStatus: roomStatus,
       ),
     );
   }
