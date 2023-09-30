@@ -22,8 +22,10 @@ class SpotDifferenceRoom extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO 座標リストを取得
-    const answerOffsets = [Offset(35.6, 102.8)];
+    final completedAnswers = [];
+    const answerOffsets = [Offset(21.7, 146.2)];
     const completedOffsets = [Offset(21.7, 146.2)];
+    final deviceWidth = MediaQuery.of(context).size.width;
 
     return SafeArea(
       child: Scaffold(
@@ -31,22 +33,43 @@ class SpotDifferenceRoom extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  _SpotDifference(
-                    answerOffsets: answerOffsets,
-                    completedOffsets: completedOffsets,
-                    path:
-                        'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/left1.png?alt=media&token=33a33476-d6d8-496b-8397-4057380de429',
-                  ),
-                  const Gap(20),
-                  _SpotDifference(
-                    answerOffsets: answerOffsets,
-                    completedOffsets: completedOffsets,
-                    path:
-                        'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/right2.png?alt=media&token=460c5614-9947-4581-8537-f672a9f8c55d',
-                  ),
-                ],
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          _SpotDifference(
+                            answerOffsets: answerOffsets,
+                            completedOffsets: completedOffsets,
+                            path:
+                                'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/left1.png?alt=media&token=33a33476-d6d8-496b-8397-4057380de429',
+                          ),
+                          ...List.generate(
+                            completedOffsets.length,
+                            (index) => _PositionedCircle(
+                              dx: completedOffsets[index].dx,
+                              dy: completedOffsets[index].dy,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Gap(20),
+                    Expanded(
+                      child: _SpotDifference(
+                        answerOffsets: answerOffsets,
+                        completedOffsets: completedOffsets,
+                        path:
+                            'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/right2.png?alt=media&token=460c5614-9947-4581-8537-f672a9f8c55d',
+                      ),
+                    ),
+                    // TODO 解答状況を描画
+                    SizedBox(
+                      width: deviceWidth / 8,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -139,18 +162,66 @@ class _SpotDifference extends HookConsumerWidget {
           final isNearShowDifferenceOffset = distance < scaledThreshold;
           print(details.localPosition);
           print(isNearShowDifferenceOffset);
+
+          //  正解している && 既に解答済みのものでなければ、正解と判断
+          if (isNearShowDifferenceOffset && !completedOffsets.contains(e)) {
+            // TODO(masaki): そのidをfirestoreへ更新
+            //  正解した場合、そのOffset周りに円を描画
+            return;
+          }
         }
+        // TODO(masaki): 正解しなかった場合は、お手つき防止用に最新タップ日時を更新
+        // タップ出来ない期間中はそもそも何か表示したい
       },
-      child: SizedBox(
-        width: 300,
-        height: 300,
-        child: GenericImage.rectangle(
-          showDetailOnTap: false,
-          aspectRatio: 560 / 578,
-          imageUrl: path,
-          key: _key,
+      child: GenericImage.rectangle(
+        showDetailOnTap: false,
+        aspectRatio: 560 / 578,
+        imageUrl: path,
+        key: _key,
+      ),
+    );
+  }
+}
+
+class _PositionedCircle extends StatelessWidget {
+  const _PositionedCircle({
+    required this.dx,
+    required this.dy,
+  });
+
+  final double dx;
+  final double dy;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: dx,
+      top: dy,
+      child: ShaderMask(
+        shaderCallback: (bounds) {
+          return const RadialGradient(
+            colors: [Colors.transparent, Colors.red],
+            stops: [
+              0.88,
+              0.9,
+            ], // Adjust to suit the diameter of the hole
+          ).createShader(bounds);
+        },
+        child: Container(
+          // TODO デバイスサイズによってサイズを変更
+          width: 100,
+          height: 100,
+          decoration: const BoxDecoration(
+            color: Colors.red,
+            shape: BoxShape.circle,
+          ),
         ),
       ),
     );
   }
 }
+
+/// 解答済みの座標を保持するプロバイダー
+final completedAnswerOffsetsProvider = StateProvider<List<Offset>>((_) => []);
+
+final latestTryDateTimeProvider = StateProvider<DateTime?>((_) => null);
