@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'app_ui_feedback_controller.dart';
@@ -36,7 +38,20 @@ class MainApp extends ConsumerWidget {
               elevation: 4,
               shadowColor: Theme.of(context).shadowColor,
             ),
+        textTheme: GoogleFonts.notoSansJpTextTheme(
+          Theme.of(context).textTheme,
+        ),
+        fontFamily: 'Noto Sans JP',
+        fontFamilyFallback: const ['Noto Sans JP'],
       ),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ja', 'JP'),
+      ],
       debugShowCheckedModeBanner: false,
       routerConfig: ref.watch(_appRouterProvider).config(),
       builder: (context, child) {

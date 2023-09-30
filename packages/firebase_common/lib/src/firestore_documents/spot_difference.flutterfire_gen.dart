@@ -8,6 +8,7 @@ class ReadSpotDifference {
   const ReadSpotDifference({
     required this.spotDifferenceId,
     required this.path,
+    required this.name,
     required this.leftImageUrl,
     required this.rightImageUrl,
     required this.pointIds,
@@ -16,6 +17,8 @@ class ReadSpotDifference {
   final String spotDifferenceId;
 
   final String path;
+
+  final String name;
 
   final String leftImageUrl;
 
@@ -27,6 +30,7 @@ class ReadSpotDifference {
     return ReadSpotDifference(
       spotDifferenceId: json['spotDifferenceId'] as String,
       path: json['path'] as String,
+      name: json['name'] as String? ?? '',
       leftImageUrl: json['leftImageUrl'] as String? ?? '',
       rightImageUrl: json['rightImageUrl'] as String? ?? '',
       pointIds: (json['pointIds'] as List<dynamic>?)
@@ -48,17 +52,20 @@ class ReadSpotDifference {
 
 class CreateSpotDifference {
   const CreateSpotDifference({
+    required this.name,
     required this.leftImageUrl,
     required this.rightImageUrl,
     required this.pointIds,
   });
 
+  final String name;
   final String leftImageUrl;
   final String rightImageUrl;
   final List<String> pointIds;
 
   Map<String, dynamic> toJson() {
     return {
+      'name': name,
       'leftImageUrl': leftImageUrl,
       'rightImageUrl': rightImageUrl,
       'pointIds': pointIds,
@@ -68,17 +75,20 @@ class CreateSpotDifference {
 
 class UpdateSpotDifference {
   const UpdateSpotDifference({
+    this.name,
     this.leftImageUrl,
     this.rightImageUrl,
     this.pointIds,
   });
 
+  final String? name;
   final String? leftImageUrl;
   final String? rightImageUrl;
   final List<String>? pointIds;
 
   Map<String, dynamic> toJson() {
     return {
+      if (name != null) 'name': name,
       if (leftImageUrl != null) 'leftImageUrl': leftImageUrl,
       if (rightImageUrl != null) 'rightImageUrl': rightImageUrl,
       if (pointIds != null) 'pointIds': pointIds,

@@ -24,9 +24,12 @@ class RootPage extends ConsumerWidget {
     return Scaffold(
       key: ref.watch(rootPageKey),
       body: AuthDependentBuilder(
-        // onAuthenticated 以下ではログイン済みで
+        // onAuthenticated 以下ではログイン済みの userId が取得できるので子に直接渡して使用する。
         onAuthenticated: (userId) {
-          return SpotDifferenceRoom(roomId: '仮の Room ID', userId: userId);
+          return SpotDifferenceRoom(
+            roomId: _roomId,
+            userId: userId,
+          );
         },
         onUnAuthenticated: () =>
             const CompletedUserScreen(roomId: 'a6aylO1igdisuWJZUpcv'),
@@ -35,3 +38,6 @@ class RootPage extends ConsumerWidget {
     );
   }
 }
+
+// TODO: 仮の roomId で決め打ちしているので修正する。
+const _roomId = 'a6aylO1igdisuWJZUpcv';
