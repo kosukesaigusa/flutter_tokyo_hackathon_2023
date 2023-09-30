@@ -90,7 +90,7 @@ final roomAndSpotDifferencesFutureProvider =
 
 /// 指定した `roomId` の [Answer] のリストを返すStreamProvider
 final answersStreamProvider =
-    StreamProvider.autoDispose.family<List<ReadAnswer>?, String>((ref, roomId) {
+    StreamProvider.autoDispose.family<List<ReadAnswer>, String>((ref, roomId) {
   final repository = ref.watch(answerRepositoryProvider);
   return repository.subscribeRoomAnswers(roomId: roomId);
 });
