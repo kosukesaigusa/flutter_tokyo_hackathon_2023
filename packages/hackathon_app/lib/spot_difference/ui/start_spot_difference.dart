@@ -15,7 +15,7 @@ import '../spot_difference.dart';
 // - roomごとに募集中とか入れる
 
 @RoutePage()
-class StartSpotDifferencePage extends ConsumerStatefulWidget {
+class StartSpotDifferencePage extends StatefulHookConsumerWidget {
   const StartSpotDifferencePage({super.key});
 
   /// [AutoRoute] で指定するパス文字列。
