@@ -30,6 +30,8 @@ final roomsStreamProvider = StreamProvider.autoDispose<List<ReadRoom>?>((ref) {
   return ref.watch(roomRepositoryProvider).subscribeRooms();
 });
 
+// TODO roomごとのspotDifferenceをとってくる必要あり
+
 /// 指定した `roomId` の [Answer] のリストを返すStreamProvider
 final answersStreamProvider =
     StreamProvider.autoDispose.family<List<ReadAnswer>?, String>((ref, roomId) {
