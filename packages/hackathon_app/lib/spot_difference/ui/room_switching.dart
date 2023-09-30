@@ -54,27 +54,24 @@ class WaitingRoomUI extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: ListView(
-        children: [
-          Text(room.roomStatus.name),
-          ...ref.watch(answersStreamProvider(room.roomId)).when(
-                data: (answers) {
-                  return [
-                    Text('現在の参加者：${answers.length.withComma}人'),
-                  ];
-                },
-                error: (_, __) => [],
-                loading: () => [],
-              ),
-          if (userId == room.createdByAppUserId)
-            ElevatedButton(
-              onPressed: () => ref
-                  .read(spotDifferenceServiceProvider)
-                  .playSpotDifference(roomId: room.roomId),
-              child: const Text('間違い探しを開始する'),
-            ),
-        ],
-      ),
+      body: ref.watch(answersStreamProvider(room.roomId)).when(
+            data: (answers) {
+              return ListView(
+                children: [
+                  Text('現在の参加人数 ${answers.length.withComma} 人'),
+                  if (userId == room.createdByAppUserId)
+                    ElevatedButton(
+                      onPressed: () => ref
+                          .read(spotDifferenceServiceProvider)
+                          .playSpotDifference(roomId: room.roomId),
+                      child: const Text('間違い探しを開始する'),
+                    ),
+                ],
+              );
+            },
+            error: (_, __) => const SizedBox(),
+            loading: () => const Center(child: CircularProgressIndicator()),
+          ),
     );
   }
 }
