@@ -1,5 +1,6 @@
 import 'package:dart_flutter_common/dart_flutter_common.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../auth/ui/auth_controller.dart';
@@ -35,14 +36,14 @@ class SpotDifferenceRoom extends ConsumerWidget {
                     answerOffsets: answerOffsets,
                     completedOffsets: completedOffsets,
                     path:
-                        'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/left1.png?alt=media&token=33a33476-d6d8-496b-8397-4057380de429&_gl=1*dc8t3*_ga*MTM4NTI5NTQxMS4xNjI0NDA2OTE5*_ga_CW55HF8NVT*MTY5NjA1ODQ4MC4yODguMS4xNjk2MDU4NDg1LjU1LjAuMA..',
+                        'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/left1.png?alt=media&token=33a33476-d6d8-496b-8397-4057380de429',
                   ),
-                  SizedBox(width: 20),
+                  Gap(20),
                   _SpotDifference(
                     answerOffsets: answerOffsets,
                     completedOffsets: completedOffsets,
                     path:
-                        'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/right2.png?alt=media&token=460c5614-9947-4581-8537-f672a9f8c55d&_gl=1*gsujs6*_ga*MTM4NTI5NTQxMS4xNjI0NDA2OTE5*_ga_CW55HF8NVT*MTY5NjA1ODQ4MC4yODguMS4xNjk2MDU4NTA4LjMyLjAuMA..',
+                        'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/right2.png?alt=media&token=460c5614-9947-4581-8537-f672a9f8c55d',
                   ),
                 ],
               ),
