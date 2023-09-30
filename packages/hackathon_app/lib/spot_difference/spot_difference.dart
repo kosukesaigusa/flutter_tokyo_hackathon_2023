@@ -27,6 +27,59 @@ final correctAnswerPointIdsProvider = StreamProvider.autoDispose
   return repository.subscribePoints(spotDifferenceId: spotDifferenceId);
 });
 
+final roomsStreamProvider = StreamProvider.autoDispose<List<ReadRoom>?>((ref) {
+  return ref.watch(roomRepositoryProvider).subscribeRooms();
+});
+
+// roomごとのspotDifferenceをとってくる必要あり
+final roomAndSpotDifferencesFutureProvider =
+    FutureProvider.autoDispose<List<(ReadRoom, ReadSpotDifference)>?>(
+  (ref) {
+    final rooms = ref.watch(roomsStreamProvider).valueOrNull ?? [];
+    final spotDifferenceRepository =
+        ref.watch(spotDifferenceRepositoryProvider);
+
+    return Future.wait(
+      rooms.map((room) async {
+        final spotDifference =
+            await spotDifferenceRepository.fetchSpotDifference(
+          spotDifferenceId: room.spotDifferenceId,
+        );
+        return (room, spotDifference!);
+      }),
+    );
+  },
+);
+
+// final spotDifferenceStreamProvider3 = StreamProvider.autoDispose<
+//     List<({ReadRoom room, ReadSpotDifference spotDifference})>?>(
+//   (ref) {
+//     final repository = ref.watch(spotDifferenceRepositoryProvider);
+//     return ref.watch(roomsStreamProvider).when(
+//           data: (rooms) {
+//             if (rooms == null) {
+//               return Stream.value(null);
+//             }
+//             return Stream.value(
+//               rooms.map(
+//                 (room) async {
+//                   final spotDifference = repository.subscribeSpotDifference(
+//                     spotDifferenceId: room.spotDifferenceId,
+//                   );
+//                   return {
+//                     'room': room,
+//                     'spotDifference': spotDifference,
+//                   };
+//                 },
+//               ).toList(),
+//             );
+//           },
+//           error: (_, __) => Stream.value(null),
+//           loading: () => Stream.value(null),
+//         );
+//   },
+// );
+
 /// 指定した `roomId` の [Answer] のリストを返すStreamProvider
 final answersStreamProvider =
     StreamProvider.autoDispose.family<List<ReadAnswer>?, String>((ref, roomId) {

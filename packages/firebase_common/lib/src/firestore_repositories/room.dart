@@ -3,6 +3,9 @@ import '../firestore_documents/_export.dart';
 class RoomRepository {
   final _query = RoomQuery();
 
+  /// 全ての [Room] を購読する
+  Stream<List<ReadRoom>?> subscribeRooms() => _query.subscribeDocuments();
+
   /// 指定した [roomId] に一致する [Room] を購読する
   Stream<ReadRoom?> subscribeRoom({required String roomId}) =>
       _query.subscribeDocument(roomId: roomId);
