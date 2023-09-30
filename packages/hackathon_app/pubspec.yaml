@@ -1,11 +1,11 @@
 name: flutter_tokyo_hackathon_2023
 description: A new Flutter project.
-publish_to: 'none' 
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.2 <4.0.0'
+  sdk: ">=3.1.2 <4.0.0"
 
 dependencies:
   auto_route: ^7.8.3
@@ -29,6 +29,7 @@ dependencies:
   hooks_riverpod: ^2.4.1
   intl: ^0.18.1
   sign_in_button: ^3.2.0
+  lottie: ^2.6.0
 
 dev_dependencies:
   auto_route_generator: ^7.3.1
@@ -46,6 +47,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/lottie/
 
 flutter_icons:
   android: true

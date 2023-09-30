@@ -1,6 +1,7 @@
 import 'package:dart_flutter_common/list.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../loading/ui/loading.dart';
 import '../spot_difference.dart';
@@ -49,45 +50,57 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
       data: (appUsers) {
         return Scaffold(
           backgroundColor: const Color(0xFFFAFAFA),
-          body: DecoratedBox(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFFDEB71),
-                  Color(0xFFFB7D64),
-                ],
-              ),
-            ),
-            child: Center(
-              child: ListView.builder(
-                reverse: true,
-                itemCount: _controllers.length,
-                itemBuilder: (context, index) {
-                  final appUser = appUsers.safeGet(index);
-                  final rank = appUsers.length - (index + 1);
-                  if (appUser != null) {
-                    final animateController = _controllers[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Center(
-                        child: FadeTransition(
-                          opacity: animateController,
-                          child: _RankingCard(
-                            imageUrl: appUser.imageUrl,
-                            displayName: appUser.displayName,
-                            index: rank,
+          body: Stack(
+            children: [
+              DecoratedBox(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFFDEB71),
+                      Color(0xFFFB7D64),
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: ListView.builder(
+                    reverse: true,
+                    itemCount: _controllers.length,
+                    itemBuilder: (context, index) {
+                      final appUser = appUsers.safeGet(index);
+                      final rank = appUsers.length - (index + 1);
+                      if (appUser != null) {
+                        final animateController = _controllers[index];
+                        return Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Center(
+                            child: FadeTransition(
+                              opacity: animateController,
+                              child: _RankingCard(
+                                imageUrl: appUser.imageUrl,
+                                displayName: appUser.displayName,
+                                index: rank,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return const SizedBox();
-                  }
-                },
+                        );
+                      } else {
+                        return const SizedBox();
+                      }
+                    },
+                  ),
+                ),
               ),
-            ),
+              Positioned.fill(
+                child: Lottie.asset(
+                  'assets/lottie/confetti.json',
+                  repeat: true,
+                  reverse: true,
+                  animate: true,
+                ),
+              ),
+            ],
           ),
         );
       },
