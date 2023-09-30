@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:sign_in_button/sign_in_button.dart';
 
 import 'auth_controller.dart';
 
@@ -36,11 +35,11 @@ class SignInButtons extends ConsumerWidget {
       children: [
         SizedBox(
           height: 48,
-          child: SignInButton(
-            Buttons.google,
-            text: 'Google でサインイン',
-            onPressed: () async =>
-                ref.read(authControllerProvider).signInWithGoogle(),
+          child: ElevatedButton(
+            onPressed: () async => ref
+                .read(authControllerProvider)
+                .signInAnonymously(displayName: '仮の名前'),
+            child: const Text('匿名でサインイン'),
           ),
         ),
       ],

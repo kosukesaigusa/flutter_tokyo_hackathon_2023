@@ -1,28 +1,18 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 import 'app_ui_feedback_controller.dart';
-import 'device_info.dart';
 import 'firebase_options.dart';
 import 'loading/ui/loading.dart';
-import 'package_info.dart';
-import 'push_notification/firebase_messaging.dart';
 import 'router/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
-    ProviderScope(
-      overrides: [
-        packageInfoProvider.overrideWithValue(await PackageInfo.fromPlatform()),
-        deviceInfoProvider.overrideWithValue(await getDeviceInfo()),
-        firebaseMessagingProvider
-            .overrideWithValue(await getFirebaseMessagingInstance()),
-      ],
-      child: const MainApp(),
+    const ProviderScope(
+      child: MainApp(),
     ),
   );
 }
