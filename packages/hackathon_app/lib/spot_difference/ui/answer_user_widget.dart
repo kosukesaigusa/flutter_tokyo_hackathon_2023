@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 class AnswerUserWidget extends StatelessWidget {
   const AnswerUserWidget({
     super.key,
     required this.ranking,
     required this.name,
+    required this.totalPoints,
+    required this.answerPoints,
   });
 
   final int ranking;
   final String name;
+  final int totalPoints;
+  final int answerPoints;
 
   TextStyle _textStyle(int ranking) {
     switch (ranking) {
@@ -26,29 +29,53 @@ class AnswerUserWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      color: Colors.blue[50],
-      child: Center(
-        child: Row(
-          children: [
-            const Gap(16),
-            SizedBox(
-              width: 30,
-              child: Text(
-                ranking.toString(),
-                style: _textStyle(ranking),
-                textAlign: TextAlign.center,
-              ),
+    return Column(
+      children: [
+        SizedBox(
+          height: 50,
+          child: Center(
+            child: Row(
+              children: [
+                Container(
+                  width: 30,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    ranking.toString(),
+                    style: _textStyle(ranking),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        name,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        '$answerPoints/$totalPoints',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            Expanded(
-                child: Text(
-              name,
-              overflow: TextOverflow.ellipsis,
-            )),
-          ],
+          ),
         ),
-      ),
+        const Divider(
+          height: 2,
+        ),
+      ],
     );
   }
 }

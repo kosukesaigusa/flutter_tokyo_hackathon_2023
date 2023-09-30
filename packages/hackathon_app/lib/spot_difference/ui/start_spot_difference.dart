@@ -9,7 +9,7 @@ import '../../app_ui_feedback_controller.dart';
 import '../../app_user/app_user.dart';
 import '../spot_difference.dart';
 import 'create_room_dialog.dart';
-import 'waiting_room.dart';
+import 'room_switching.dart';
 
 // TODO
 // - roomsを購読(status:pending or playing)
@@ -98,9 +98,11 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                       );
 
                   // 参加時に空のAnswerを作成する
-                  await ref.read(spotDifferenceServiceProvider).createAnswer(
+                  await ref
+                      .read(spotDifferenceServiceProvider)
+                      .createInitialAnswer(
                         roomId: roomId,
-                        appUserId: widget.userId,
+                        userId: widget.userId,
                       );
                   await Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute<void>(

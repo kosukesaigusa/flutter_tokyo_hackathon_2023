@@ -27,16 +27,11 @@ class RoomRepository {
     );
   }
 
-  /// 指定した [roomId] に一致する [Room] の roomStatus を変更する
-  Future<void> updateRoom({
-    required String roomId,
-    required RoomStatus roomStatus,
-  }) async {
+  /// 指定した [roomId] を playing にする
+  Future<void> playRoom({required String roomId}) async {
     await _query.update(
       roomId: roomId,
-      updateRoom: UpdateRoom(
-        roomStatus: roomStatus,
-      ),
+      updateRoom: const UpdateRoom(roomStatus: RoomStatus.playing),
     );
   }
 }

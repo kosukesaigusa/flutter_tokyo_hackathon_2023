@@ -29,10 +29,14 @@ class ProgressTimeWidget extends HookWidget {
           '${second.toString().padLeft(2, '0')}';
     }
 
-    return Container(
+    return SizedBox(
       height: 50,
-      color: Colors.amber,
-      child: Center(child: Text('経過時間: ${formatTime(_elapsedSeconds.value)}')),
+      child: Center(
+        child: Text(
+          '経過時間:${formatTime(_elapsedSeconds.value)}',
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 }

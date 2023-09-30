@@ -14,13 +14,13 @@ class AnswerRepository {
       _query.subscribeDocument(roomId: roomId, answerId: appUserId);
 
   /// 指定した [roomId] に一致する Room 配下の [Answer] の List を購読する
-  Stream<List<ReadAnswer>?> subscribeRoomAnswers({
+  Stream<List<ReadAnswer>> subscribeRoomAnswers({
     required String roomId,
   }) =>
       _query.subscribeDocuments(roomId: roomId);
 
   /// 指定した [roomId] を持つ [Answer] を作成する
-  Future<void> createAnswer({
+  Future<void> createInitialAnswer({
     required String roomId,
     required String appUserId,
   }) async {

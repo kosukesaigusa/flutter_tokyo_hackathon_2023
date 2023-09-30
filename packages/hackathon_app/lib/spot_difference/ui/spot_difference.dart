@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:dart_flutter_common/dart_flutter_common.dart';
 import 'package:firebase_common/firebase_common.dart';
 import 'package:flutter/material.dart';
@@ -27,46 +28,30 @@ class SpotDifferenceRoom extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO 座標リストを取得
-    final completedAnswers = [];
-    const answerOffsets = [Offset(12.3, 58.4)];
-    const completedOffsets = [Offset(15.5, 57.1)];
-    final deviceWidth = MediaQuery.of(context).size.width;
-    // TODO: 超仮りなので
-    final appUsers = [
-      const AppUser(displayName: '太郎', imageUrl: ''),
-      const AppUser(displayName: '二郎', imageUrl: ''),
-      const AppUser(displayName: '三郎', imageUrl: ''),
-      const AppUser(displayName: '知ろう', imageUrl: ''),
-      const AppUser(displayName: '吾郎', imageUrl: ''),
-      const AppUser(displayName: 'ろくろう', imageUrl: ''),
-      const AppUser(displayName: '太郎', imageUrl: ''),
-      const AppUser(displayName: '二郎', imageUrl: ''),
-      const AppUser(displayName: '三郎', imageUrl: ''),
-      const AppUser(displayName: '知ろう', imageUrl: ''),
-      const AppUser(displayName: '吾郎', imageUrl: ''),
-      const AppUser(displayName: 'ろくろう', imageUrl: ''),
-      const AppUser(displayName: '太郎', imageUrl: ''),
-      const AppUser(displayName: '二郎', imageUrl: ''),
-      const AppUser(displayName: '三郎', imageUrl: ''),
-      const AppUser(displayName: '知ろう', imageUrl: ''),
-      const AppUser(displayName: '吾郎', imageUrl: ''),
-      const AppUser(displayName: 'ろくろう', imageUrl: ''),
-      const AppUser(displayName: '太郎', imageUrl: ''),
-      const AppUser(displayName: '二郎', imageUrl: ''),
-      const AppUser(displayName: '三郎', imageUrl: ''),
-      const AppUser(displayName: '知ろう', imageUrl: ''),
-      const AppUser(displayName: '吾郎', imageUrl: ''),
-      const AppUser(displayName: 'ろくろう', imageUrl: ''),
-    ];
+    final spotDifference =
+        ref.watch(spotDifferenceFutureProvider(roomId)).valueOrNull;
+
+    if (spotDifference == null) {
+      return const SizedBox();
+    }
+
+    // TODO nullable外すか検討
+    final answers = ref.watch(answersStreamProvider(roomId)).valueOrNull;
+    if (answers == null) {
+      return const SizedBox();
+    }
+    final myAnswer = answers.firstWhereOrNull((e) => e.answerId == userId);
 
     return SafeArea(
       child: Scaffold(
-        body: ref.watch(spotDifferenceFutureProvider(roomId)).when(
-              data: (spotDifference) {
-                if (spotDifference == null) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+        body: ref
+            .watch(
+              correctAnswerPointsProvider(
+                spotDifference.spotDifferenceId,
+              ),
+            )
+            .when(
+              data: (points) {
                 return Stack(
                   children: [
                     Center(
@@ -76,46 +61,37 @@ class SpotDifferenceRoom extends ConsumerWidget {
                           Expanded(
                             child: Row(
                               children: [
-                                Expanded(
-                                  child: Stack(
-                                    children: [
-                                      _SpotDifference(
-                                        answerOffsets: answerOffsets,
-                                        completedOffsets: completedOffsets,
-                                        path: spotDifference.leftImageUrl,
-                                      ),
-                                    ],
-                                  ),
+                                _SpotDifference(
+                                  roomId: roomId,
+                                  answerId: userId,
+                                  answerPoints: points,
+                                  completedPointIds: myAnswer?.pointIds ?? [],
+                                  path: spotDifference.leftImageUrl,
                                 ),
                                 const Gap(20),
-                                Expanded(
-                                  child: _SpotDifference(
-                                    answerOffsets: answerOffsets,
-                                    completedOffsets: completedOffsets,
-                                    path: spotDifference.rightImageUrl,
-                                  ),
+                                _SpotDifference(
+                                  roomId: roomId,
+                                  answerId: userId,
+                                  answerPoints: points,
+                                  completedPointIds: myAnswer?.pointIds ?? [],
+                                  path: spotDifference.rightImageUrl,
                                 ),
-                                // TODO 解答状況を描画
                                 Container(
-                                  color: Colors.grey[100],
-                                  width: deviceWidth / 8,
-                                  child: Column(
-                                    children: [
-                                      ProgressTimeWidget(
-                                        startTime: DateTime.now(),
+                                  width: 150,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      left: BorderSide(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .outlineVariant,
+                                        width: 2, // ボーダーの太さ
                                       ),
-                                      Expanded(
-                                        child: ListView.builder(
-                                          itemCount: appUsers.length,
-                                          itemBuilder: (context, index) {
-                                            return AnswerUserWidget(
-                                              ranking: index + 1,
-                                              name: appUsers[index].displayName,
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ],
+                                    ),
+                                  ),
+                                  child: _Ranking(
+                                    roomId: roomId,
+                                    spotDifference: spotDifference,
+                                    answers: answers,
                                   ),
                                 ),
                               ],
@@ -124,15 +100,24 @@ class SpotDifferenceRoom extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    if (ref.watch(isRestrictedProvider))
-                      // TODO ウィジェット作成
-                      const _RestrictionLoading(),
+                    if (ref.watch(answerStatusProvider) ==
+                        AnswerStatus.restricted)
+                      const _AnswerStatusPopUp(
+                        message: '不正解！\n5秒利用禁止です！',
+                      ),
+                    if (ref.watch(answerStatusProvider) ==
+                        AnswerStatus.celebrated)
+                      const _AnswerStatusPopUp(
+                        message: 'おめでとう！！',
+                      ),
                   ],
                 );
               },
               error: (_, __) =>
                   const Center(child: Text('間違い探しルームの取得に失敗しました。')),
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
             ),
         // TODO: 開発中にサインアウトできる手段を与えるために一時的に表示している。
         floatingActionButton: FloatingActionButton(
@@ -144,8 +129,10 @@ class SpotDifferenceRoom extends ConsumerWidget {
   }
 }
 
-class _RestrictionLoading extends StatelessWidget {
-  const _RestrictionLoading();
+class _AnswerStatusPopUp extends StatelessWidget {
+  const _AnswerStatusPopUp({required this.message});
+
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -160,20 +147,20 @@ class _RestrictionLoading extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Center(
+            child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '不正解！\n5秒利用禁止です！',
+                    message,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  // TODO タイマー or 煽りアニメーション入れたい
-                  CircularProgressIndicator(),
+                  // TODO タイマー/煽りアニメーション AND おめでとうアニメーション入れたい
+                  const CircularProgressIndicator(),
                 ],
               ),
             ),
@@ -186,38 +173,56 @@ class _RestrictionLoading extends StatelessWidget {
 
 class _SpotDifference extends HookConsumerWidget {
   _SpotDifference({
+    required this.roomId,
+    required this.answerId,
     required this.path,
-    required this.answerOffsets,
-    required this.completedOffsets,
+    required this.answerPoints,
+    required this.completedPointIds,
   });
 
+  final String roomId;
+  final String answerId;
   final String path;
-  final List<Offset> answerOffsets;
-  final List<Offset> completedOffsets;
+  final List<ReadPoint> answerPoints;
+  final List<String> completedPointIds;
   final GlobalKey _key = GlobalKey();
   final threshold = 26;
   final defaultDifferenceSize = 300;
   final defaultAnsweredCircleDiameter = 30.0;
 
+  /// answerPointsの中でcompletedPointIdsに含まれるReadPointのリスト
+  List<ReadPoint> get completedPoints {
+    return answerPoints
+        .where(
+          (element) => completedPointIds.contains(element.pointId),
+        )
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scaledAnswerOffsets = useState<List<Offset>>([]);
-    final scaledCompletedOffsets = useState<List<Offset>>([]);
+    final scaledAnswerPoints = useState<List<_ScaledPoint>>([]);
+    final scaledCompletedPoints = useState<List<_ScaledPoint>>([]);
     final size = useState<Size>(Size.zero);
-    final offset = useState<Offset>(Offset.zero);
     final answeredCircleDiameter =
         useState<double>(defaultAnsweredCircleDiameter);
 
-    Offset scaleOffset(
-      Offset answerOffset,
+    final windowSize = MediaQuery.of(context).size;
+
+    _ScaledPoint scalePoint(
+      ReadPoint answerPoint,
     ) {
       final scaleX = size.value.width / defaultDifferenceSize;
       final scaleY = size.value.height / defaultDifferenceSize;
 
-      final newX = answerOffset.dx * scaleX;
-      final newY = answerOffset.dy * scaleY;
+      final newX = answerPoint.x * scaleX;
+      final newY = answerPoint.y * scaleY;
 
-      return Offset(newX, newY);
+      return _ScaledPoint(
+        pointId: answerPoint.pointId,
+        x: newX,
+        y: newY,
+      );
     }
 
     Size getSize() {
@@ -230,68 +235,80 @@ class _SpotDifference extends HookConsumerWidget {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           size.value = getSize();
 
-          offset.value = scaleOffset(answerOffsets.first);
-
           answeredCircleDiameter.value = defaultAnsweredCircleDiameter *
               size.value.height /
               defaultDifferenceSize;
 
-          for (final e in answerOffsets) {
-            scaledAnswerOffsets.value =
-                scaledAnswerOffsets.value + [scaleOffset(e)];
+          for (final e in answerPoints) {
+            scaledAnswerPoints.value =
+                scaledAnswerPoints.value + [scalePoint(e)];
           }
 
-          for (final e in completedOffsets) {
-            scaledCompletedOffsets.value =
-                scaledCompletedOffsets.value + [scaleOffset(e)];
+          for (final e in completedPoints) {
+            scaledCompletedPoints.value =
+                scaledCompletedPoints.value + [scalePoint(e)];
           }
         });
         return;
       },
-      [],
+      [
+        // ウィンドウサイズが変更される度にuseEffectを呼び出す
+        windowSize,
+      ],
     );
 
-    return Stack(
-      children: [
-        GestureDetector(
-          onLongPressStart: (details) {
-            // TODO(masaki): 現在地点と正解のリストを比較
-            //  正解した場合でもそのidが既に自身が選択しているものであれば、早期リターン
+    return Expanded(
+      child: Stack(
+        children: [
+          GestureDetector(
+            onLongPressStart: (details) {
+              // 現在地点と正解のリストを比較
+              //  正解した場合でもそのidが既に自身が選択しているものであれば、早期リターン
 
-            for (final e in scaledAnswerOffsets.value) {
-              final scaledThreshold =
-                  threshold * size.value.height / defaultDifferenceSize;
-              final distance = (details.localPosition - e).distance;
-              final isNearShowDifferenceOffset = distance < scaledThreshold;
-              print(details.localPosition);
-              print(isNearShowDifferenceOffset);
+              for (final e in scaledAnswerPoints.value) {
+                final scaledThreshold =
+                    threshold * size.value.height / defaultDifferenceSize;
 
-              //  正解している && 既に解答済みのものでなければ、正解と判断
-              if (isNearShowDifferenceOffset && !completedOffsets.contains(e)) {
-                // TODO(masaki): そのidをfirestoreへ更新
-                //  正解した場合、そのOffset周りに円を描画
-                return;
+                final scaledAnswerOffset = Offset(e.x, e.y);
+                final distance =
+                    (details.localPosition - scaledAnswerOffset).distance;
+                final isNearShowDifferenceOffset = distance < scaledThreshold;
+                print(details.localPosition);
+                print(isNearShowDifferenceOffset);
+
+                //  正解している場合、idを追加&円を描画
+                if (isNearShowDifferenceOffset) {
+                  // TODO(masaki): 「参加する」ボタン押下後に空のAnswerが作成されるようになったらコメント外す
+                  // ref.read(spotDifferenceServiceProvider).addPoint(
+                  //       roomId: roomId,
+                  //       answerId: answerId,
+                  //       pointId: e.pointId,
+                  //     );
+
+                  //  正解した場合、そのOffset周りに円を描画
+                  ref.read(spotDifferenceControllerProvider).celebrate();
+                  return;
+                }
               }
-            }
-            // タップ出来ない期間中はそもそも何か表示したい
-            ref.read(spotDifferenceControllerProvider).restrict();
-          },
-          child: GenericImage.rectangle(
-            showDetailOnTap: false,
-            aspectRatio: 560 / 578,
-            imageUrl: path,
-            key: _key,
+              ref.read(spotDifferenceControllerProvider).restrict();
+            },
+            child: GenericImage.rectangle(
+              showDetailOnTap: false,
+              aspectRatio: 560 / 578,
+              imageUrl: path,
+              key: _key,
+            ),
           ),
-        ),
-        ...List.generate(
-          completedOffsets.length,
-          (index) => _PositionedCircle(
-            dx: completedOffsets[index].dx,
-            dy: completedOffsets[index].dy,
-            diameter: answeredCircleDiameter.value,
+          ...List.generate(
+            completedPointIds.length,
+            (index) => _PositionedCircle(
+              dx: scalePoint(completedPoints[index]).x,
+              dy: scalePoint(completedPoints[index]).y,
+              diameter: answeredCircleDiameter.value,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -323,7 +340,6 @@ class _PositionedCircle extends StatelessWidget {
           ).createShader(bounds);
         },
         child: Container(
-          // TODO デバイスサイズによってサイズを変更
           width: diameter,
           height: diameter,
           decoration: const BoxDecoration(
@@ -336,17 +352,28 @@ class _PositionedCircle extends StatelessWidget {
   }
 }
 
-/// 不正解による利用制限を管理するProvider
-final isRestrictedProvider = StateProvider<bool>((_) {
-  return false;
-});
+enum AnswerStatus {
+  /// 不正解による制限中
+  restricted,
+
+  /// 正解によるお祝い中
+  celebrated,
+
+  /// 通常
+  normal,
+}
+
+/// 回答の状況を管理するProvider
+final answerStatusProvider = StateProvider<AnswerStatus>(
+  (_) => AnswerStatus.normal,
+);
 
 final spotDifferenceControllerProvider =
     Provider.autoDispose<SpotDifferenceController>(
   (ref) {
     return SpotDifferenceController(
-      isRestrictedController: ref.watch(
-        isRestrictedProvider.notifier,
+      answerStatusController: ref.watch(
+        answerStatusProvider.notifier,
       ),
     );
   },
@@ -354,15 +381,78 @@ final spotDifferenceControllerProvider =
 
 class SpotDifferenceController {
   SpotDifferenceController({
-    required StateController<bool> isRestrictedController,
-  }) : _isRestrictedController = isRestrictedController;
+    required StateController<AnswerStatus> answerStatusController,
+  }) : _answerStatusController = answerStatusController;
 
-  final StateController<bool> _isRestrictedController;
+  final StateController<AnswerStatus> _answerStatusController;
 
   /// 利用を5秒間制限する
   Future<void> restrict() async {
-    _isRestrictedController.update((state) => true);
+    _answerStatusController.update((state) => AnswerStatus.restricted);
     await Future<void>.delayed(const Duration(seconds: 5));
-    _isRestrictedController.update((state) => false);
+    _answerStatusController.update((state) => AnswerStatus.normal);
   }
+
+  /// 0.5秒間お祝いダイアログを表示する
+  Future<void> celebrate() async {
+    _answerStatusController.update((state) => AnswerStatus.celebrated);
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    _answerStatusController.update((state) => AnswerStatus.normal);
+  }
+}
+
+class _Ranking extends HookConsumerWidget {
+  const _Ranking({
+    required this.roomId,
+    required this.spotDifference,
+    required this.answers,
+  });
+
+  final String roomId;
+  final ReadSpotDifference spotDifference;
+  final List<ReadAnswer> answers;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      children: [
+        ProgressTimeWidget(
+          startTime: DateTime.now(),
+        ),
+        const Divider(
+          height: 2,
+        ),
+        Expanded(
+            child: ListView.builder(
+          itemCount: answers.length,
+          itemBuilder: (context, index) {
+            final appUser = ref
+                .watch(
+                  appUsersFutureProvider(answers[index].answerId),
+                )
+                .valueOrNull;
+            return AnswerUserWidget(
+              ranking: index + 1,
+              name: appUser?.displayName ?? '',
+              answerPoints: answers[index].pointIds.length,
+              totalPoints: spotDifference.pointIds.length,
+            );
+          },
+        ),),
+      ],
+    );
+  }
+}
+
+/// 画面サイズに応じて変換された座標を持つクラス
+class _ScaledPoint {
+  _ScaledPoint({
+    required this.pointId,
+    required this.x,
+    required this.y,
+  });
+
+  final String pointId;
+  final double x;
+  final double y;
 }

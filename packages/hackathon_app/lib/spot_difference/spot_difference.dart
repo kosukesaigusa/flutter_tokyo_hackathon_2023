@@ -13,6 +13,14 @@ final _userAnswerStreamProvider = StreamProvider.autoDispose
   );
 });
 
+/// 指定した `userId` に一致する [AppUser] を購読する StreamProvider
+final appUsersFutureProvider =
+    FutureProvider.autoDispose.family<ReadAppUser?, String>(
+  (ref, userId) async {
+    return ref.watch(appUserRepositoryProvider).fetch(userId: userId);
+  },
+);
+
 /// 指定した `roomId`, `appUserId` に一致する、正解した [Point] の id のリストを取得するプロバイダー
 final answeredPointIdsProvider = Provider.autoDispose
     .family<List<String>, ({String roomId, String appUserId})>((ref, param) {
@@ -21,8 +29,8 @@ final answeredPointIdsProvider = Provider.autoDispose
 });
 
 /// 指定した [SpotDifference] の答えの [Point] のリストを購読する StreamProvider
-final correctAnswerPointIdsProvider = StreamProvider.autoDispose
-    .family<List<ReadPoint>?, String>((ref, spotDifferenceId) {
+final correctAnswerPointsProvider = StreamProvider.autoDispose
+    .family<List<ReadPoint>, String>((ref, spotDifferenceId) {
   final repository = ref.watch(pointRepositoryProvider);
   return repository.subscribePoints(spotDifferenceId: spotDifferenceId);
 });
@@ -82,7 +90,7 @@ final roomAndSpotDifferencesFutureProvider =
 
 /// 指定した `roomId` の [Answer] のリストを返すStreamProvider
 final answersStreamProvider =
-    StreamProvider.autoDispose.family<List<ReadAnswer>?, String>((ref, roomId) {
+    StreamProvider.autoDispose.family<List<ReadAnswer>, String>((ref, roomId) {
   final repository = ref.watch(answerRepositoryProvider);
   return repository.subscribeRoomAnswers(roomId: roomId);
 });
@@ -175,17 +183,6 @@ class SpotDifferenceService {
 
   final RoomRepository _roomRepository;
 
-  /// [Answer] を作成する
-  Future<void> createAnswer({
-    required String roomId,
-    required String appUserId,
-  }) async {
-    await _answerRepository.createAnswer(
-      roomId: roomId,
-      appUserId: appUserId,
-    );
-  }
-
   /// [Point] を追加する
   Future<void> addPoint({
     required String roomId,
@@ -208,4 +205,15 @@ class SpotDifferenceService {
         spotDifferenceId: spotDifferenceId,
         createdByAppUserId: userId,
       );
+
+  /// 指定した [roomId] に対する最初の [Answer] を作成する（= ルームに参加する）。
+  Future<void> createInitialAnswer({
+    required String roomId,
+    required String userId,
+  }) =>
+      _answerRepository.createInitialAnswer(roomId: roomId, appUserId: userId);
+
+  /// 指定した [roomId] を playing にする。
+  Future<void> playSpotDifference({required String roomId}) =>
+      _roomRepository.playRoom(roomId: roomId);
 }
