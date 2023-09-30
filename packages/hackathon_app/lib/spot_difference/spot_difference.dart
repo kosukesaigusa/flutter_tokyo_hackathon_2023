@@ -12,7 +12,7 @@ final _answerStreamProvider = StreamProvider.autoDispose
   );
 });
 
-/// 指定した `roomId`, `appUserId` に一致する、正解した [Point] のリストを取得するプロバイダー
+/// 指定した `roomId`, `appUserId` に一致する、正解した [Point] の id のリストを取得するプロバイダー
 final answeredPointIdsProvider = Provider.autoDispose
     .family<List<String>, ({String roomId, String appUserId})>((ref, param) {
   return ref.watch(_answerStreamProvider(param)).valueOrNull?.pointIds ?? [];
