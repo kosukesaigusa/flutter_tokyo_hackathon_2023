@@ -1,10 +1,13 @@
 import 'package:dart_flutter_common/dart_flutter_common.dart';
+import 'package:firebase_common/firebase_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../auth/ui/auth_controller.dart';
+import 'answer_user_widget.dart';
+import 'progress_time_widget.dart';
 
 /// 間違い探しを行うルームの UI.
 /// そのルームに対応する [roomId] とサインイン済みのユーザーの [userId] を引数として渡す。
@@ -26,6 +29,33 @@ class SpotDifferenceRoom extends ConsumerWidget {
     const answerOffsets = [Offset(21.7, 146.2)];
     const completedOffsets = [Offset(21.7, 146.2)];
     final deviceWidth = MediaQuery.of(context).size.width;
+    // TODO: 超仮りなので
+    final appUsers = [
+      const AppUser(displayName: '太郎', imageUrl: ''),
+      const AppUser(displayName: '二郎', imageUrl: ''),
+      const AppUser(displayName: '三郎', imageUrl: ''),
+      const AppUser(displayName: '知ろう', imageUrl: ''),
+      const AppUser(displayName: '吾郎', imageUrl: ''),
+      const AppUser(displayName: 'ろくろう', imageUrl: ''),
+      const AppUser(displayName: '太郎', imageUrl: ''),
+      const AppUser(displayName: '二郎', imageUrl: ''),
+      const AppUser(displayName: '三郎', imageUrl: ''),
+      const AppUser(displayName: '知ろう', imageUrl: ''),
+      const AppUser(displayName: '吾郎', imageUrl: ''),
+      const AppUser(displayName: 'ろくろう', imageUrl: ''),
+      const AppUser(displayName: '太郎', imageUrl: ''),
+      const AppUser(displayName: '二郎', imageUrl: ''),
+      const AppUser(displayName: '三郎', imageUrl: ''),
+      const AppUser(displayName: '知ろう', imageUrl: ''),
+      const AppUser(displayName: '吾郎', imageUrl: ''),
+      const AppUser(displayName: 'ろくろう', imageUrl: ''),
+      const AppUser(displayName: '太郎', imageUrl: ''),
+      const AppUser(displayName: '二郎', imageUrl: ''),
+      const AppUser(displayName: '三郎', imageUrl: ''),
+      const AppUser(displayName: '知ろう', imageUrl: ''),
+      const AppUser(displayName: '吾郎', imageUrl: ''),
+      const AppUser(displayName: 'ろくろう', imageUrl: ''),
+    ];
 
     return SafeArea(
       child: Scaffold(
@@ -65,8 +95,27 @@ class SpotDifferenceRoom extends ConsumerWidget {
                       ),
                     ),
                     // TODO 解答状況を描画
-                    SizedBox(
+                    Container(
+                      color: Colors.grey[100],
                       width: deviceWidth / 8,
+                      child: Column(
+                        children: [
+                          ProgressTimeWidget(
+                            startTime: DateTime.now(),
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: appUsers.length,
+                              itemBuilder: (context, index) {
+                                return AnswerUserWidget(
+                                  ranking: index + 1,
+                                  name: appUsers[index].displayName,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
