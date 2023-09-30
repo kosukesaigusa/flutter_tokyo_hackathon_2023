@@ -90,7 +90,7 @@ final roomAndSpotDifferencesFutureProvider =
 
 /// 指定した `roomId` の [Answer] のリストを返すStreamProvider
 final answersStreamProvider =
-    StreamProvider.autoDispose.family<List<ReadAnswer>?, String>((ref, roomId) {
+    StreamProvider.autoDispose.family<List<ReadAnswer>, String>((ref, roomId) {
   final repository = ref.watch(answerRepositoryProvider);
   return repository.subscribeRoomAnswers(roomId: roomId);
 });
@@ -205,4 +205,11 @@ class SpotDifferenceService {
         spotDifferenceId: spotDifferenceId,
         createdByAppUserId: userId,
       );
+
+  /// 指定した [roomId] に対する最初の [Answer] を作成する（= ルームに参加する）。
+  Future<void> createInitialAnswer({
+    required String roomId,
+    required String userId,
+  }) =>
+      _answerRepository.createInitialAnswer(roomId: roomId, appUserId: userId);
 }
