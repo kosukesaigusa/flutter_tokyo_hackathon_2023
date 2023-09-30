@@ -51,3 +51,30 @@ final elapsedTimeProvider = Provider.autoDispose.family<String, String>(
     return elapsedTime.toString().split('.').first;
   },
 );
+
+final spotDifferenceServiceProvider = Provider.autoDispose<SpotDifferenceService>(
+  (ref) => SpotDifferenceService(
+    answerRepository: ref.watch(answerRepositoryProvider),
+  ),
+);
+
+class SpotDifferenceService {
+  const SpotDifferenceService({
+    required AnswerRepository answerRepository,
+  }) : _answerRepository = answerRepository;
+
+  final AnswerRepository _answerRepository;
+
+  /// [Point] を追加する
+  Future<void> addPoint({
+    required String roomId,
+    required String answerId,
+    required String pointId,
+  }) async {
+    await _answerRepository.addPoint(
+      roomId: roomId,
+      answerId: answerId,
+      pointId: pointId,
+    );
+  }
+}
