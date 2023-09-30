@@ -9,7 +9,6 @@ class ReadAnswer {
     required this.answerId,
     required this.path,
     required this.roomId,
-    required this.appUserId,
     required this.pointIds,
     required this.createdAt,
     required this.updatedAt,
@@ -20,8 +19,6 @@ class ReadAnswer {
   final String path;
 
   final String roomId;
-
-  final String appUserId;
 
   final List<String> pointIds;
 
@@ -34,7 +31,6 @@ class ReadAnswer {
       answerId: json['answerId'] as String,
       path: json['path'] as String,
       roomId: json['roomId'] as String,
-      appUserId: json['appUserId'] as String,
       pointIds:
           (json['pointIds'] as List<dynamic>).map((e) => e as String).toList(),
       createdAt: (json['createdAt'] as Timestamp?)?.toDate(),
@@ -55,18 +51,15 @@ class ReadAnswer {
 class CreateAnswer {
   const CreateAnswer({
     required this.roomId,
-    required this.appUserId,
     required this.pointIds,
   });
 
   final String roomId;
-  final String appUserId;
   final FirestoreData<List<String>> pointIds;
 
   Map<String, dynamic> toJson() {
     return {
       'roomId': roomId,
-      'appUserId': appUserId,
       'pointIds': pointIds.value,
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
@@ -77,20 +70,17 @@ class CreateAnswer {
 class UpdateAnswer {
   const UpdateAnswer({
     this.roomId,
-    this.appUserId,
     this.pointIds,
     this.createdAt,
   });
 
   final String? roomId;
-  final String? appUserId;
   final FirestoreData<List<String>>? pointIds;
   final DateTime? createdAt;
 
   Map<String, dynamic> toJson() {
     return {
       if (roomId != null) 'roomId': roomId,
-      if (appUserId != null) 'appUserId': appUserId,
       if (pointIds != null) 'pointIds': pointIds!.value,
       if (createdAt != null) 'createdAt': createdAt,
       'updatedAt': FieldValue.serverTimestamp(),
