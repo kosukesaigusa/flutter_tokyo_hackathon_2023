@@ -19,5 +19,11 @@ class CompletedUserRepository {
   Stream<List<ReadCompletedUser>> subscribeCompletedUsers({
     required String roomId,
   }) =>
-      _query.subscribeDocuments(roomId: roomId);
+      _query.subscribeDocuments(
+        roomId: roomId,
+        queryBuilder: (query) => query.orderBy(
+          'createdAt',
+          descending: true,
+        ),
+      );
 }
