@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dart_flutter_common/dart_flutter_common.dart';
 import 'package:firebase_common/firebase_common.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +28,8 @@ class SpotDifferenceRoom extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO 座標リストを取得
     final completedAnswers = [];
-    const answerOffsets = [Offset(21.7, 146.2)];
-    const completedOffsets = [Offset(21.7, 146.2)];
+    const answerOffsets = [Offset(12.3, 58.4)];
+    const completedOffsets = [Offset(15.5, 57.1)];
     final deviceWidth = MediaQuery.of(context).size.width;
     // TODO: 超仮りなので
     final appUsers = [
@@ -59,75 +61,114 @@ class SpotDifferenceRoom extends ConsumerWidget {
 
     return SafeArea(
       child: Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Stack(
-                        children: [
-                          _SpotDifference(
+        body: Stack(
+          children: [
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Stack(
+                            children: [
+                              _SpotDifference(
+                                answerOffsets: answerOffsets,
+                                completedOffsets: completedOffsets,
+                                path:
+                                    'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/left1.png?alt=media&token=33a33476-d6d8-496b-8397-4057380de429',
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Gap(20),
+                        Expanded(
+                          child: _SpotDifference(
                             answerOffsets: answerOffsets,
                             completedOffsets: completedOffsets,
                             path:
-                                'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/left1.png?alt=media&token=33a33476-d6d8-496b-8397-4057380de429',
+                                'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/right2.png?alt=media&token=460c5614-9947-4581-8537-f672a9f8c55d',
                           ),
-                          ...List.generate(
-                            completedOffsets.length,
-                            (index) => _PositionedCircle(
-                              dx: completedOffsets[index].dx,
-                              dy: completedOffsets[index].dy,
-                            ),
+                        ),
+                        // TODO 解答状況を描画
+                        Container(
+                          color: Colors.grey[100],
+                          width: deviceWidth / 8,
+                          child: Column(
+                            children: [
+                              ProgressTimeWidget(
+                                startTime: DateTime.now(),
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: appUsers.length,
+                                  itemBuilder: (context, index) {
+                                    return AnswerUserWidget(
+                                      ranking: index + 1,
+                                      name: appUsers[index].displayName,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const Gap(20),
-                    Expanded(
-                      child: _SpotDifference(
-                        answerOffsets: answerOffsets,
-                        completedOffsets: completedOffsets,
-                        path:
-                            'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/right2.png?alt=media&token=460c5614-9947-4581-8537-f672a9f8c55d',
-                      ),
-                    ),
-                    // TODO 解答状況を描画
-                    Container(
-                      color: Colors.grey[100],
-                      width: deviceWidth / 8,
-                      child: Column(
-                        children: [
-                          ProgressTimeWidget(
-                            startTime: DateTime.now(),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: appUsers.length,
-                              itemBuilder: (context, index) {
-                                return AnswerUserWidget(
-                                  ranking: index + 1,
-                                  name: appUsers[index].displayName,
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            if (ref.watch(isRestrictedProvider))
+              // TODO ウィジェット作成
+              const _RestrictionLoading(),
+          ],
         ),
         // TODO: 開発中にサインアウトできる手段を与えるために一時的に表示している。
         floatingActionButton: FloatingActionButton(
           onPressed: () => ref.read(authControllerProvider).signOut(),
           child: const Icon(Icons.logout),
         ),
+      ),
+    );
+  }
+}
+
+class _RestrictionLoading extends StatelessWidget {
+  const _RestrictionLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: Colors.black26,
+      child: SizedBox.expand(
+        child: Center(
+            child: Container(
+          width: 200,
+          height: 200,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '不正解！\n5秒利用禁止です！',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                // TODO タイマー or 煽りアニメーション入れたい
+                CircularProgressIndicator(),
+              ],
+            ),
+          ),
+        )),
       ),
     );
   }
@@ -146,6 +187,7 @@ class _SpotDifference extends HookConsumerWidget {
   final GlobalKey _key = GlobalKey();
   final threshold = 26;
   final defaultDifferenceSize = 300;
+  final defaultAnsweredCircleDiameter = 30.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -153,6 +195,8 @@ class _SpotDifference extends HookConsumerWidget {
     final scaledCompletedOffsets = useState<List<Offset>>([]);
     final size = useState<Size>(Size.zero);
     final offset = useState<Offset>(Offset.zero);
+    final answeredCircleDiameter =
+        useState<double>(defaultAnsweredCircleDiameter);
 
     Offset scaleOffset(
       Offset answerOffset,
@@ -178,6 +222,10 @@ class _SpotDifference extends HookConsumerWidget {
 
           offset.value = scaleOffset(answerOffsets.first);
 
+          answeredCircleDiameter.value = defaultAnsweredCircleDiameter *
+              size.value.height /
+              defaultDifferenceSize;
+
           for (final e in answerOffsets) {
             scaledAnswerOffsets.value =
                 scaledAnswerOffsets.value + [scaleOffset(e)];
@@ -193,41 +241,47 @@ class _SpotDifference extends HookConsumerWidget {
       [],
     );
 
-    return GestureDetector(
-      onLongPressStart: (details) {
-        // TODO(masaki): 最新タップ日時を更新
-        // TODO(masaki): 直近5秒(仮)以内にロングタップしたか判定、早期リターン
+    return Stack(
+      children: [
+        GestureDetector(
+          onLongPressStart: (details) {
+            // TODO(masaki): 現在地点と正解のリストを比較
+            //  正解した場合でもそのidが既に自身が選択しているものであれば、早期リターン
 
-        // TODO(masaki): 現在地点と正解のリストを比較
-        //  正解した場合でもそのidが既に自身が選択しているものであれば、早期リターン
+            for (final e in scaledAnswerOffsets.value) {
+              final scaledThreshold =
+                  threshold * size.value.height / defaultDifferenceSize;
+              final distance = (details.localPosition - e).distance;
+              final isNearShowDifferenceOffset = distance < scaledThreshold;
+              print(details.localPosition);
+              print(isNearShowDifferenceOffset);
 
-        // TODO(masaki): 正解した場合、そのidをfirestoreへ更新
-        //  正解した場合、そのOffset周りに円を描画
-
-        for (final e in scaledAnswerOffsets.value) {
-          final scaledThreshold =
-              threshold * size.value.height / defaultDifferenceSize;
-          final distance = (details.localPosition - e).distance;
-          final isNearShowDifferenceOffset = distance < scaledThreshold;
-          print(details.localPosition);
-          print(isNearShowDifferenceOffset);
-
-          //  正解している && 既に解答済みのものでなければ、正解と判断
-          if (isNearShowDifferenceOffset && !completedOffsets.contains(e)) {
-            // TODO(masaki): そのidをfirestoreへ更新
-            //  正解した場合、そのOffset周りに円を描画
-            return;
-          }
-        }
-        // TODO(masaki): 正解しなかった場合は、お手つき防止用に最新タップ日時を更新
-        // タップ出来ない期間中はそもそも何か表示したい
-      },
-      child: GenericImage.rectangle(
-        showDetailOnTap: false,
-        aspectRatio: 560 / 578,
-        imageUrl: path,
-        key: _key,
-      ),
+              //  正解している && 既に解答済みのものでなければ、正解と判断
+              if (isNearShowDifferenceOffset && !completedOffsets.contains(e)) {
+                // TODO(masaki): そのidをfirestoreへ更新
+                //  正解した場合、そのOffset周りに円を描画
+                return;
+              }
+            }
+            // タップ出来ない期間中はそもそも何か表示したい
+            ref.read(spotDifferenceControllerProvider).restrict();
+          },
+          child: GenericImage.rectangle(
+            showDetailOnTap: false,
+            aspectRatio: 560 / 578,
+            imageUrl: path,
+            key: _key,
+          ),
+        ),
+        ...List.generate(
+          completedOffsets.length,
+          (index) => _PositionedCircle(
+            dx: completedOffsets[index].dx,
+            dy: completedOffsets[index].dy,
+            diameter: answeredCircleDiameter.value,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -236,30 +290,32 @@ class _PositionedCircle extends StatelessWidget {
   const _PositionedCircle({
     required this.dx,
     required this.dy,
+    required this.diameter,
   });
 
   final double dx;
   final double dy;
+  final double diameter;
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: dx,
-      top: dy,
+      left: dx - diameter / 2,
+      top: dy - diameter / 2,
       child: ShaderMask(
         shaderCallback: (bounds) {
           return const RadialGradient(
             colors: [Colors.transparent, Colors.red],
             stops: [
-              0.88,
+              0.82,
               0.9,
-            ], // Adjust to suit the diameter of the hole
+            ],
           ).createShader(bounds);
         },
         child: Container(
           // TODO デバイスサイズによってサイズを変更
-          width: 100,
-          height: 100,
+          width: diameter,
+          height: diameter,
           decoration: const BoxDecoration(
             color: Colors.red,
             shape: BoxShape.circle,
@@ -270,7 +326,33 @@ class _PositionedCircle extends StatelessWidget {
   }
 }
 
-/// 解答済みの座標を保持するプロバイダー
-final completedAnswerOffsetsProvider = StateProvider<List<Offset>>((_) => []);
+/// 不正解による利用制限を管理するProvider
+final isRestrictedProvider = StateProvider<bool>((_) {
+  return false;
+});
 
-final latestTryDateTimeProvider = StateProvider<DateTime?>((_) => null);
+final spotDifferenceControllerProvider =
+    Provider.autoDispose<SpotDifferenceController>(
+  (ref) {
+    return SpotDifferenceController(
+      isRestrictedController: ref.watch(
+        isRestrictedProvider.notifier,
+      ),
+    );
+  },
+);
+
+class SpotDifferenceController {
+  SpotDifferenceController({
+    required StateController<bool> isRestrictedController,
+  }) : _isRestrictedController = isRestrictedController;
+
+  final StateController _isRestrictedController;
+
+  /// 利用を5秒間制限する
+  Future<void> restrict() async {
+    _isRestrictedController.update((state) => true);
+    await Future.delayed(const Duration(seconds: 5));
+    _isRestrictedController.update((state) => false);
+  }
+}
