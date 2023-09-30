@@ -24,7 +24,9 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: flutter pub get (dart_flutter_common)
-        run: cd packages/dart_flutter_common && flutter pub get
+        run: |
+          ls -la
+          cd packages/dart_flutter_common && flutter pub get
 
       - name: flutter pub get (firebase_common)
         run: cd packages/firebase_common && flutter pub get
