@@ -30,7 +30,7 @@ final answeredPointIdsProvider = Provider.autoDispose
 
 /// 指定した [SpotDifference] の答えの [Point] のリストを購読する StreamProvider
 final correctAnswerPointsProvider = StreamProvider.autoDispose
-    .family<List<ReadPoint>?, String>((ref, spotDifferenceId) {
+    .family<List<ReadPoint>, String>((ref, spotDifferenceId) {
   final repository = ref.watch(pointRepositoryProvider);
   return repository.subscribePoints(spotDifferenceId: spotDifferenceId);
 });

@@ -43,73 +43,70 @@ class SpotDifferenceRoom extends ConsumerWidget {
               ),
             )
             .when(
-                data: (points) {
-                  if (points == null) {
-                    return const SizedBox();
-                  }
-
-                  return Stack(
-                    children: [
-                      Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Stack(
-                                      children: [
-                                        _SpotDifference(
-                                          answerPoints: points,
-                                          completedPoints: const [],
-                                          path: spotDifference.leftImageUrl,
-                                        ),
-                                      ],
-                                    ),
+              data: (points) {
+                return Stack(
+                  children: [
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Stack(
+                                    children: [
+                                      _SpotDifference(
+                                        answerPoints: points,
+                                        completedPoints: const [],
+                                        path: spotDifference.leftImageUrl,
+                                      ),
+                                    ],
                                   ),
-                                  const Gap(20),
-                                  Expanded(
-                                    child: _SpotDifference(
-                                      answerPoints: points,
-                                      completedPoints: const [],
-                                      path: spotDifference.rightImageUrl,
-                                    ),
+                                ),
+                                const Gap(20),
+                                Expanded(
+                                  child: _SpotDifference(
+                                    answerPoints: points,
+                                    completedPoints: const [],
+                                    path: spotDifference.rightImageUrl,
                                   ),
-                                  Container(
-                                    width: 150,
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        left: BorderSide(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .outlineVariant,
-                                          width: 2, // ボーダーの太さ
-                                        ),
+                                ),
+                                Container(
+                                  width: 150,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      left: BorderSide(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .outlineVariant,
+                                        width: 2, // ボーダーの太さ
                                       ),
                                     ),
-                                    child: _Ranking(
-                                      roomId: roomId,
-                                      spotDifference: spotDifference,
-                                    ),
                                   ),
-                                ],
-                              ),
+                                  child: _Ranking(
+                                    roomId: roomId,
+                                    spotDifference: spotDifference,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      if (ref.watch(isRestrictedProvider))
-                        // TODO ウィジェット作成
-                        const _RestrictionLoading(),
-                    ],
-                  );
-                },
-                error: (_, __) =>
-                    const Center(child: Text('間違い探しルームの取得に失敗しました。')),
-                loading: () => const Center(
-                      child: CircularProgressIndicator(),
-                    ),),
+                    ),
+                    if (ref.watch(isRestrictedProvider))
+                      // TODO ウィジェット作成
+                      const _RestrictionLoading(),
+                  ],
+                );
+              },
+              error: (_, __) =>
+                  const Center(child: Text('間違い探しルームの取得に失敗しました。')),
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
         // TODO: 開発中にサインアウトできる手段を与えるために一時的に表示している。
         floatingActionButton: FloatingActionButton(
           onPressed: () => ref.read(authControllerProvider).signOut(),
@@ -376,14 +373,14 @@ class _Ranking extends HookConsumerWidget {
                   return ListView.builder(
                     itemCount: answers.length,
                     itemBuilder: (context, index) {
-                      final appUser = ref
+                      final appUsers = ref
                           .watch(
                             appUsersFutureProvider(answers[index].answerId),
                           )
                           .valueOrNull;
                       return AnswerUserWidget(
                         ranking: index + 1,
-                        name: appUser?.displayName ?? '',
+                        name: appUsers?.displayName ?? '',
                         answerPoints: answers[index].pointIds.length,
                         totalPoints: spotDifference.pointIds.length,
                       );
