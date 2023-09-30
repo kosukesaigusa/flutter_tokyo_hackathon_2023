@@ -41,6 +41,16 @@ final _roomStreamProvider =
   },
 );
 
+/// 指定した `roomId` に一致する [Room] の [CompletedUser] のリストを購読する StreamProvider
+final completedUsersStreamProvider =
+    StreamProvider.autoDispose.family<List<ReadCompletedUser>?, String>(
+  (ref, roomId) {
+    return ref
+        .watch(completedUserRepositoryProvider)
+        .subscribeCompletedUsers(roomId: roomId);
+  },
+);
+
 /// 指定した `roomId` に一致する [Room] の開始時刻から現在時刻までの経過時間を返すプロバイダー
 final elapsedTimeProvider = Provider.autoDispose.family<String, String>(
   (ref, roomId) {
@@ -52,7 +62,8 @@ final elapsedTimeProvider = Provider.autoDispose.family<String, String>(
   },
 );
 
-final spotDifferenceServiceProvider = Provider.autoDispose<SpotDifferenceService>(
+final spotDifferenceServiceProvider =
+    Provider.autoDispose<SpotDifferenceService>(
   (ref) => SpotDifferenceService(
     answerRepository: ref.watch(answerRepositoryProvider),
   ),
