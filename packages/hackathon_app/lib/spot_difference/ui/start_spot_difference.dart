@@ -1,3 +1,4 @@
+import 'package:dart_flutter_common/dart_flutter_common.dart';
 import 'package:firebase_common/firebase_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -165,11 +166,9 @@ class _RoomCard extends HookWidget {
             ),
             child: Stack(
               children: [
-                Image.network(
-                  spotDifference.thumbnailImageUrl,
-                  width: 500,
-                  height: 300,
-                  fit: BoxFit.cover,
+                GenericImage.rectangle(
+                  imageUrl: spotDifference.thumbnailImageUrl,
+                  maxWidth: 500,
                 ),
                 Positioned.fill(
                   child: ColoredBox(
