@@ -5,6 +5,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../auth/ui/auth_controller.dart';
 
+// TODO
+// - roomsを購読(status:pending or playing)
+// - roomを選択できるようにする
+// -「参加する」ボタンを押すとそのルームに遷移
+// - roomのサムネ表示
+// - roomごとに募集中とか入れる
+
 @RoutePage()
 class StartSpotDifferencePage extends ConsumerStatefulWidget {
   const StartSpotDifferencePage({super.key});
