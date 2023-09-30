@@ -191,16 +191,22 @@ class _RoomCard extends HookWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
-                    top: 250,
+                    top: 10,
                     left: 20,
                   ),
-                  child: Text(
-                    spotDifference.name,
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        spotDifference.name,
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      _RoomStatusText(roomStatus: room.roomStatus),
+                    ],
                   ),
                 ),
               ],
@@ -210,5 +216,39 @@ class _RoomCard extends HookWidget {
         const Gap(16),
       ],
     );
+  }
+}
+
+class _RoomStatusText extends StatelessWidget {
+  const _RoomStatusText({
+    required this.roomStatus,
+  });
+
+  final RoomStatus roomStatus;
+  final _textStyle = const TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    switch (roomStatus) {
+      case RoomStatus.pending:
+        return Text(
+          '待機中',
+          style: _textStyle,
+        );
+      case RoomStatus.playing:
+        return Text(
+          '開催中',
+          style: _textStyle,
+        );
+      case RoomStatus.completed:
+        return Text(
+          '終了',
+          style: _textStyle,
+        );
+    }
   }
 }
