@@ -51,12 +51,12 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
         final roomAndSpotDifferences = roomAndSpotDifferencesData ?? [];
         return Center(
           child: Padding(
-            padding: const EdgeInsets.all(100),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            padding: const EdgeInsets.all(8),
+            child: ListView(
               children: [
-                SizedBox(
-                  width: 300,
+                const Gap(32),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 500),
                   child: TextField(
                     controller: _displayNameTextEditingController,
                     decoration: const InputDecoration(
@@ -116,70 +116,70 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                     child: const Text('参加する'),
                   ),
                 ),
+                const Gap(16),
                 // ルーム一覧を表示する
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: roomAndSpotDifferences.length,
-                    itemBuilder: (context, index) {
-                      final room = roomAndSpotDifferences[index].$1;
-                      final spotDifference = roomAndSpotDifferences[index].$2;
-                      final isSelectRoom = selectedRoomId.value == room.roomId;
-                      return Column(
-                        children: [
-                          InkWell(
-                            onTap: () => selectedRoomId.value = room.roomId,
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(20),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Image.network(
-                                    spotDifference.thumbnailImageUrl,
-                                    width: 500,
-                                    height: 300,
-                                    fit: BoxFit.cover,
+
+                Column(
+                  children: roomAndSpotDifferences.map((roomAndSpotDifference) {
+                    final room = roomAndSpotDifference.$1;
+                    final spotDifference = roomAndSpotDifference.$2;
+                    final isSelectRoom = selectedRoomId.value == room.roomId;
+
+                    return Column(
+                      children: [
+                        InkWell(
+                          onTap: () => selectedRoomId.value = room.roomId,
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(20),
+                            ),
+                            child: Stack(
+                              children: [
+                                Image.network(
+                                  spotDifference.thumbnailImageUrl,
+                                  width: 500,
+                                  height: 300,
+                                  fit: BoxFit.cover,
+                                ),
+                                Positioned.fill(
+                                  child: ColoredBox(
+                                    color: isSelectRoom
+                                        ? const Color.fromARGB(
+                                            158,
+                                            226,
+                                            218,
+                                            61,
+                                          )
+                                        : const Color.fromARGB(
+                                            106,
+                                            157,
+                                            157,
+                                            157,
+                                          ),
                                   ),
-                                  Positioned.fill(
-                                    child: ColoredBox(
-                                      color: isSelectRoom
-                                          ? const Color.fromARGB(
-                                              158,
-                                              226,
-                                              218,
-                                              61,
-                                            )
-                                          : const Color.fromARGB(
-                                              106,
-                                              157,
-                                              157,
-                                              157,
-                                            ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 250,
+                                    left: 20,
+                                  ),
+                                  child: Text(
+                                    spotDifference.name,
+                                    style: const TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 250,
-                                      left: 20,
-                                    ),
-                                    child: Text(
-                                      spotDifference.name,
-                                      style: const TextStyle(
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
-                          const Gap(16),
-                        ],
-                      );
-                    },
-                  ),
+                        ),
+                        const Gap(16),
+                      ],
+                    );
+                  }).toList(),
                 ),
               ],
             ),
