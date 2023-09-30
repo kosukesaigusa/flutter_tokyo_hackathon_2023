@@ -46,10 +46,11 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
   @override
   Widget build(BuildContext context) {
     final selectedRoomId = useState<String?>(null);
-    final roomsAsyncValue = ref.watch(roomAndSpotDifferencesFutureProvider);
+
+    final roomsAsyncValue = ref.watch(roomsStreamProvider);
     return roomsAsyncValue.when(
-      data: (roomAndSpotDifferencesData) {
-        final roomAndSpotDifferences = roomAndSpotDifferencesData;
+      data: (data) {
+        final rooms = data ?? [];
         return Center(
           child: Padding(
             padding: const EdgeInsets.all(8),
@@ -121,13 +122,9 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                 ),
                 const Gap(32),
                 Column(
-                  children: roomAndSpotDifferences.map((roomAndSpotDifference) {
-                    final room = roomAndSpotDifference.$1;
-                    final spotDifference = roomAndSpotDifference.$2;
-
+                  children: rooms.map((room) {
                     return _RoomCard(
                       room: room,
-                      spotDifference: spotDifference,
                       selectedRoomId: selectedRoomId,
                     );
                   }).toList(),
@@ -143,79 +140,159 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
   }
 }
 
-class _RoomCard extends HookWidget {
-  const _RoomCard({
-    required this.room,
-    required this.spotDifference,
-    required this.selectedRoomId,
-  });
+class _RoomCard extends ConsumerWidget {
+  const _RoomCard({required this.room, required this.selectedRoomId});
 
   final ReadRoom room;
-  final ReadSpotDifference spotDifference;
   final ValueNotifier<String?> selectedRoomId;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        InkWell(
-          onTap: () => selectedRoomId.value = room.roomId,
-          child: ClipRRect(
-            borderRadius: const BorderRadius.all(
-              Radius.circular(20),
-            ),
-            child: Stack(
-              children: [
-                GenericImage.rectangle(
-                  imageUrl: spotDifference.thumbnailImageUrl,
-                  maxWidth: 500,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final spotDifferenceAsyncValue =
+        ref.watch(spotDifferenceFutureProvider(room.roomId));
+    return spotDifferenceAsyncValue.when(
+      data: (spotDifference) {
+        if (spotDifference == null) {
+          return const SizedBox();
+        }
+        return Column(
+          children: [
+            InkWell(
+              onTap: () => selectedRoomId.value = room.roomId,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(20),
                 ),
-                Positioned.fill(
-                  child: ColoredBox(
-                    color: selectedRoomId.value == room.roomId
-                        ? const Color.fromARGB(
-                            158,
-                            226,
-                            218,
-                            61,
-                          )
-                        : const Color.fromARGB(
-                            106,
-                            157,
-                            157,
-                            157,
-                          ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 10,
-                    left: 20,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        spotDifference.name,
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                child: Stack(
+                  children: [
+                    GenericImage.rectangle(
+                      imageUrl: spotDifference.thumbnailImageUrl,
+                      maxWidth: 500,
+                    ),
+                    Positioned.fill(
+                      child: ColoredBox(
+                        color: selectedRoomId.value == room.roomId
+                            ? const Color.fromARGB(
+                                158,
+                                226,
+                                218,
+                                61,
+                              )
+                            : const Color.fromARGB(
+                                106,
+                                157,
+                                157,
+                                157,
+                              ),
                       ),
-                      _RoomStatusText(roomStatus: room.roomStatus),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10,
+                        left: 20,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            spotDifference.name,
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          _RoomStatusText(roomStatus: room.roomStatus),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-        const Gap(16),
-      ],
+            const Gap(16),
+          ],
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, __) => const SizedBox(),
     );
   }
 }
+
+// class _RoomCard extends HookWidget {
+//   const _RoomCard({
+//     required this.room,
+//     required this.spotDifference,
+//     required this.selectedRoomId,
+//   });
+
+//   final ReadRoom room;
+//   final ReadSpotDifference spotDifference;
+//   final ValueNotifier<String?> selectedRoomId;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         InkWell(
+//           onTap: () => selectedRoomId.value = room.roomId,
+//           child: ClipRRect(
+//             borderRadius: const BorderRadius.all(
+//               Radius.circular(20),
+//             ),
+//             child: Stack(
+//               children: [
+//                 GenericImage.rectangle(
+//                   imageUrl: spotDifference.thumbnailImageUrl,
+//                   maxWidth: 500,
+//                 ),
+//                 Positioned.fill(
+//                   child: ColoredBox(
+//                     color: selectedRoomId.value == room.roomId
+//                         ? const Color.fromARGB(
+//                             158,
+//                             226,
+//                             218,
+//                             61,
+//                           )
+//                         : const Color.fromARGB(
+//                             106,
+//                             157,
+//                             157,
+//                             157,
+//                           ),
+//                   ),
+//                 ),
+//                 Padding(
+//                   padding: const EdgeInsets.only(
+//                     top: 10,
+//                     left: 20,
+//                   ),
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text(
+//                         spotDifference.name,
+//                         style: const TextStyle(
+//                           fontSize: 32,
+//                           fontWeight: FontWeight.bold,
+//                           color: Colors.white,
+//                         ),
+//                       ),
+//                       _RoomStatusText(roomStatus: room.roomStatus),
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         const Gap(16),
+//       ],
+//     );
+//   }
+// }
 
 class _RoomStatusText extends StatelessWidget {
   const _RoomStatusText({
