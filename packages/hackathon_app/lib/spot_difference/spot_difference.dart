@@ -175,6 +175,17 @@ class SpotDifferenceService {
 
   final RoomRepository _roomRepository;
 
+  /// [Answer] を作成する
+  Future<void> createAnswer({
+    required String roomId,
+    required String appUserId,
+  }) async {
+    await _answerRepository.createAnswer(
+      roomId: roomId,
+      appUserId: appUserId,
+    );
+  }
+
   /// [Point] を追加する
   Future<void> addPoint({
     required String roomId,

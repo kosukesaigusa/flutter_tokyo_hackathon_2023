@@ -107,6 +107,14 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                             userId: widget.userId,
                             displayName: displayName,
                           );
+
+                      // 参加時に空のAnswerを作成する
+                      await ref
+                          .read(spotDifferenceServiceProvider)
+                          .createAnswer(
+                            roomId: roomId,
+                            appUserId: widget.userId,
+                          );
                       await Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute<void>(
                           builder: (context) => RoomStatusSwitchingUI(
