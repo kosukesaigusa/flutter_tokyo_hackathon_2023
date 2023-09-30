@@ -1,9 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../auth/ui/auth_controller.dart';
 import '../../loading/ui/loading.dart';
 import '../spot_difference.dart';
 
@@ -48,6 +48,7 @@ class StartSpotDifferencePageState
 
   @override
   Widget build(BuildContext context) {
+    final selectedRoomId = useState<String?>(null);
     final roomsAsyncValue = ref.watch(roomAndSpotDifferencesFutureProvider);
     return roomsAsyncValue.when(
       data: (roomAndSpotDifferencesData) {
@@ -71,13 +72,15 @@ class StartSpotDifferencePageState
                 const Gap(32),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () => ref
-                        .read(authControllerProvider)
-                        .signInAnonymously(
-                          displayName: _displayNameTextEditingController.text,
-                          // TODO: 適当な画像を選ばせると良さそう
-                          // imageUrl: '',
-                        ),
+                    onPressed: () {
+                      // ルーム選択なし or 表示名未入力の場合は何もしない
+                      if (selectedRoomId.value == null ||
+                          _displayNameTextEditingController.text.isEmpty) {
+                        return;
+                      }
+
+                      // TODO: ここでルームに参加する処理を書く
+                    },
                     child: const Text('参加する'),
                   ),
                 ),
@@ -90,32 +93,41 @@ class StartSpotDifferencePageState
                       final spotDifference = roomAndSpotDifferences[index].$2;
                       return Column(
                         children: [
-                          ClipRRect(
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(20),
-                            ),
-                            child: Stack(
-                              children: [
-                                Image.network(
-                                  spotDifference.thumbnailImageUrl,
-                                  width: 500,
-                                  height: 300,
-                                  fit: BoxFit.cover,
-                                ),
-                                const Positioned.fill(
-                                  child: ColoredBox(
-                                    color: Color.fromARGB(106, 157, 157, 157),
+                          InkWell(
+                            onTap: () => selectedRoomId.value = room.roomId,
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(20),
+                              ),
+                              child: Stack(
+                                children: [
+                                  Image.network(
+                                    spotDifference.thumbnailImageUrl,
+                                    width: 500,
+                                    height: 300,
+                                    fit: BoxFit.cover,
                                   ),
-                                ),
-                                Text(
-                                  spotDifference.name,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                  const Positioned.fill(
+                                    child: ColoredBox(
+                                      color: Color.fromARGB(106, 157, 157, 157),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 250,
+                                      left: 20,
+                                    ),
+                                    child: Text(
+                                      spotDifference.name,
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           const Gap(16),
