@@ -212,4 +212,8 @@ class SpotDifferenceService {
     required String userId,
   }) =>
       _answerRepository.createInitialAnswer(roomId: roomId, appUserId: userId);
+
+  /// 指定した [roomId] を playing にする。
+  Future<void> playSpotDifference({required String roomId}) =>
+      _roomRepository.playRoom(roomId: roomId);
 }

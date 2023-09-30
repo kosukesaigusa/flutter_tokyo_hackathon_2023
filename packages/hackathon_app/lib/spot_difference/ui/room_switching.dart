@@ -66,6 +66,13 @@ class WaitingRoomUI extends ConsumerWidget {
                 error: (_, __) => [],
                 loading: () => [],
               ),
+          if (userId == room.createdByAppUserId)
+            ElevatedButton(
+              onPressed: () => ref
+                  .read(spotDifferenceServiceProvider)
+                  .playSpotDifference(roomId: room.roomId),
+              child: const Text('間違い探しを開始する'),
+            ),
         ],
       ),
     );
