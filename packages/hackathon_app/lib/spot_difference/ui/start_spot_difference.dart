@@ -49,6 +49,8 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
 
     final roomsAsyncValue = ref.watch(roomsStreamProvider);
 
+    final iconsAsyncValue = ref.watch(iconsSteamProvider);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8),

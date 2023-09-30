@@ -27,3 +27,6 @@ final completedUserRepositoryProvider =
   (_) => CompletedUserRepository(),
 );
 
+final iconRepositoryProvider = Provider.autoDispose<IconRepository>(
+  (ref) => IconRepository(),
+);

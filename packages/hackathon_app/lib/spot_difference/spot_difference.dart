@@ -135,6 +135,10 @@ final elapsedTimeProvider = Provider.autoDispose.family<String, String>(
   },
 );
 
+final iconsSteamProvider = StreamProvider.autoDispose(
+  (ref) => ref.watch(iconRepositoryProvider).subscribeIcons(),
+);
+
 final spotDifferenceServiceProvider =
     Provider.autoDispose<SpotDifferenceService>(
   (ref) => SpotDifferenceService(
