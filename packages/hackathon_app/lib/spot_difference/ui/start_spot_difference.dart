@@ -6,22 +6,23 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../auth/ui/auth_controller.dart';
 
 @RoutePage()
-class SignInAnonymouslyPage extends ConsumerStatefulWidget {
-  const SignInAnonymouslyPage({super.key});
+class StartSpotDifferencePage extends ConsumerStatefulWidget {
+  const StartSpotDifferencePage({super.key});
 
   /// [AutoRoute] で指定するパス文字列。
   static const path = '/signInAnonymously';
 
-  /// [SignInAnonymouslyPage] に遷移する際に `context.router.pushNamed` で
+  /// [StartSpotDifferencePage] に遷移する際に `context.router.pushNamed` で
   /// 指定する文字列。
   static const location = path;
 
   @override
-  ConsumerState<SignInAnonymouslyPage> createState() =>
-      SignInAnonymouslyPageState();
+  ConsumerState<StartSpotDifferencePage> createState() =>
+      StartSpotDifferencePageState();
 }
 
-class SignInAnonymouslyPageState extends ConsumerState<SignInAnonymouslyPage> {
+class StartSpotDifferencePageState
+    extends ConsumerState<StartSpotDifferencePage> {
   late final TextEditingController _displayNameTextEditingController;
 
   @override

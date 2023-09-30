@@ -10,9 +10,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i4;
 import 'package:flutter_tokyo_hackathon_2023/auth/ui/sign_in.dart' as _i3;
-import 'package:flutter_tokyo_hackathon_2023/auth/ui/sign_in_anonymously.dart'
-    as _i2;
 import 'package:flutter_tokyo_hackathon_2023/root/ui/root.dart' as _i1;
+import 'package:flutter_tokyo_hackathon_2023/spot_difference/ui/start_spot_difference.dart'
+    as _i2;
 
 abstract class $AppRouter extends _i4.RootStackRouter {
   $AppRouter({super.navigatorKey});
@@ -28,7 +28,7 @@ abstract class $AppRouter extends _i4.RootStackRouter {
     SignInAnonymouslyRoute.name: (routeData) {
       return _i4.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i2.SignInAnonymouslyPage(),
+        child: const _i2.StartSpotDifferencePage(),
       );
     },
     SocialSignInRoute.name: (routeData) {
@@ -55,7 +55,7 @@ class RootRoute extends _i4.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i2.SignInAnonymouslyPage]
+/// [_i2.StartSpotDifferencePage]
 class SignInAnonymouslyRoute extends _i4.PageRouteInfo<void> {
   const SignInAnonymouslyRoute({List<_i4.PageRouteInfo>? children})
       : super(
