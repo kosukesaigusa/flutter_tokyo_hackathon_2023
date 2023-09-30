@@ -4,19 +4,50 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../loading/ui/loading.dart';
 import '../spot_difference.dart';
 
-class CompletedUserScreen extends ConsumerWidget {
+class CompletedUserScreen extends ConsumerStatefulWidget {
   const CompletedUserScreen({
-    required this.roomId,
     super.key,
+    required this.roomId,
   });
-
   final String roomId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final completedAppUsersAsyncValue =
-        ref.watch(completedAppUsersFutureProvider(roomId));
+  CompletedUserScreenState createState() => CompletedUserScreenState();
+}
 
+class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
+    with TickerProviderStateMixin {
+  final List<AnimationController> _controllers = [];
+
+  @override
+  void initState() {
+    super.initState();
+    Future(
+      () async {
+        final users = ref
+                .watch(completedAppUsersFutureProvider(widget.roomId))
+                .valueOrNull ??
+            [];
+        await Future.forEach(users, (user) async {
+          await Future<void>.delayed(const Duration(seconds: 1));
+          print('$user');
+          setState(() {
+            _controllers.add(
+              AnimationController(
+                vsync: this,
+                duration: const Duration(seconds: 1),
+              )..forward(),
+            );
+          });
+        });
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final completedAppUsersAsyncValue =
+        ref.watch(completedAppUsersFutureProvider(widget.roomId));
     return completedAppUsersAsyncValue.when(
       data: (appUsers) {
         return Scaffold(
@@ -34,16 +65,19 @@ class CompletedUserScreen extends ConsumerWidget {
             ),
             child: Center(
               child: ListView.builder(
-                itemCount: appUsers.length,
+                itemCount: _controllers.length,
                 itemBuilder: (context, index) {
                   final appUser = appUsers[index];
                   return Padding(
                     padding: const EdgeInsets.all(8),
                     child: Center(
-                      child: _RankingCard(
-                        imageUrl: appUser?.imageUrl,
-                        displayName: appUser?.displayName,
-                        index: index,
+                      child: FadeTransition(
+                        opacity: _controllers[index],
+                        child: _RankingCard(
+                          imageUrl: appUser?.imageUrl,
+                          displayName: appUser?.displayName,
+                          index: index,
+                        ),
                       ),
                     ),
                   );
