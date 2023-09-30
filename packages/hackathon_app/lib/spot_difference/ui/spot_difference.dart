@@ -187,7 +187,7 @@ class _SpotDifference extends HookConsumerWidget {
   final GlobalKey _key = GlobalKey();
   final threshold = 20;
   final defaultDifferenceSize = 300;
-  final defaultAnsweredCircleDiameter = 30.0;
+  final defaultAnsweredCircleDiameter = 40.0;
 
   /// answerPointsの中でcompletedPointIdsに含まれるReadPointのリスト
   List<ReadPoint> get completedPoints {
@@ -297,7 +297,7 @@ class _SpotDifference extends HookConsumerWidget {
             ),
           ),
           ...List.generate(
-            completedPointIds.length,
+            completedPoints.length,
             (index) => _PositionedCircle(
               dx: scalePoint(completedPoints[index]).x,
               dy: scalePoint(completedPoints[index]).y,
@@ -331,7 +331,7 @@ class _PositionedCircle extends StatelessWidget {
           return const RadialGradient(
             colors: [Colors.transparent, Colors.red],
             stops: [
-              0.82,
+              0.85,
               0.9,
             ],
           ).createShader(bounds);
