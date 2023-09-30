@@ -30,12 +30,18 @@ class AuthController {
 
   final AppUIFeedbackController _appUIFeedbackController;
 
-  /// Google サインインする。
-  Future<void> signInWithGoogle() async {
+  /// 表示名 [displayName] と画像 URL [imageUrl]（任意）を与え、匿名アカウントでサインイン
+  /// する。
+  Future<void> signInAnonymously({
+    required String displayName,
+    String? imageUrl,
+  }) async {
     _overlayLoadingStateController.update((state) => true);
     try {
-      final userCredential = await _authService.signInWithGoogle();
-      // await _setFcmToken(userCredential);
+      await _authService.signInAnonymously(
+        displayName: displayName,
+        imageUrl: imageUrl,
+      );
       _appUIFeedbackController.showSnackBar('サインインしました');
     } on AppException catch (e) {
       _appUIFeedbackController.showSnackBarByException(e);
@@ -45,33 +51,6 @@ class AuthController {
       _overlayLoadingStateController.update((state) => false);
     }
   }
-
-  /// メールアドレスとパスワードでサインする。
-  /// サインイン後、必要性を確認して [UserMode] を `UserMode.Host` にする。
-  /// デバッグ目的でのみ使用する。
-  Future<void> signInWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final userCredential = await _authService.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on AppException catch (e) {
-      _appUIFeedbackController.showSnackBarByException(e);
-    }
-  }
-
-  // /// サインインで得られた [UserCredential] を与え、それに対応するユーザーの FCM トークンを
-  // /// 保存する。
-  // Future<void> _setFcmToken(UserCredential userCredential) async {
-  //   final uid = userCredential.user?.uid;
-  //   if (uid == null) {
-  //     return;
-  //   }
-  //   await _fcmTokenService.setUserFcmToken(userId: uid);
-  // }
 
   /// [FirebaseAuth] からサインアウトする。
   Future<void> signOut() => _authService.signOut();

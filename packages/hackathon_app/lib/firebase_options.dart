@@ -17,16 +17,19 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for android - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -49,20 +52,13 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAOqCfCbyUFwpkXjF4eYopha2a60m-__lA',
-    appId: '1:316808803038:android:2afe860b3cfe26b68f084f',
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDUVKX-2hkbrNnQVdVbwOWN9t6GzJxC2bE',
+    appId: '1:316808803038:web:d9f4eda24341e1b38f084f',
     messagingSenderId: '316808803038',
     projectId: 'flutter-tokyo-hackathon-2023',
+    authDomain: 'flutter-tokyo-hackathon-2023.firebaseapp.com',
     storageBucket: 'flutter-tokyo-hackathon-2023.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyC4MirRA291cknWWekT56Ogr3toy1utG2c',
-    appId: '1:316808803038:ios:c9e39413dedbf4c38f084f',
-    messagingSenderId: '316808803038',
-    projectId: 'flutter-tokyo-hackathon-2023',
-    storageBucket: 'flutter-tokyo-hackathon-2023.appspot.com',
-    iosBundleId: 'com.kosukesaigusa.flutterTokyoHackathon2023',
+    measurementId: 'G-0VH7CTS766',
   );
 }
