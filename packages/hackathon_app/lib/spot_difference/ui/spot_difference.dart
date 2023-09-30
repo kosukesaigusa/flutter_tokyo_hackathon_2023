@@ -32,33 +32,6 @@ class SpotDifferenceRoom extends ConsumerWidget {
     const answerOffsets = [Offset(12.3, 58.4)];
     const completedOffsets = [Offset(15.5, 57.1)];
     final deviceWidth = MediaQuery.of(context).size.width;
-    // TODO: 超仮りなので
-    final appUsers = [
-      const AppUser(displayName: '太郎', imageUrl: ''),
-      const AppUser(displayName: '二郎', imageUrl: ''),
-      const AppUser(displayName: '三郎', imageUrl: ''),
-      const AppUser(displayName: '知ろう', imageUrl: ''),
-      const AppUser(displayName: '吾郎', imageUrl: ''),
-      const AppUser(displayName: 'ろくろう', imageUrl: ''),
-      const AppUser(displayName: '太郎', imageUrl: ''),
-      const AppUser(displayName: '二郎', imageUrl: ''),
-      const AppUser(displayName: '三郎', imageUrl: ''),
-      const AppUser(displayName: '知ろう', imageUrl: ''),
-      const AppUser(displayName: '吾郎', imageUrl: ''),
-      const AppUser(displayName: 'ろくろう', imageUrl: ''),
-      const AppUser(displayName: '太郎', imageUrl: ''),
-      const AppUser(displayName: '二郎', imageUrl: ''),
-      const AppUser(displayName: '三郎', imageUrl: ''),
-      const AppUser(displayName: '知ろう', imageUrl: ''),
-      const AppUser(displayName: '吾郎', imageUrl: ''),
-      const AppUser(displayName: 'ろくろう', imageUrl: ''),
-      const AppUser(displayName: '太郎', imageUrl: ''),
-      const AppUser(displayName: '二郎', imageUrl: ''),
-      const AppUser(displayName: '三郎', imageUrl: ''),
-      const AppUser(displayName: '知ろう', imageUrl: ''),
-      const AppUser(displayName: '吾郎', imageUrl: ''),
-      const AppUser(displayName: 'ろくろう', imageUrl: ''),
-    ];
 
     return SafeArea(
       child: Scaffold(
@@ -95,27 +68,21 @@ class SpotDifferenceRoom extends ConsumerWidget {
                                     path: spotDifference.rightImageUrl,
                                   ),
                                 ),
-                                // TODO 解答状況を描画
                                 Container(
-                                  color: Colors.grey[100],
-                                  width: deviceWidth / 8,
-                                  child: Column(
-                                    children: [
-                                      ProgressTimeWidget(
-                                        startTime: DateTime.now(),
+                                  width: 150,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      left: BorderSide(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .outlineVariant,
+                                        width: 2, // ボーダーの太さ
                                       ),
-                                      Expanded(
-                                        child: ListView.builder(
-                                          itemCount: appUsers.length,
-                                          itemBuilder: (context, index) {
-                                            return AnswerUserWidget(
-                                              ranking: index + 1,
-                                              name: appUsers[index].displayName,
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ],
+                                    ),
+                                  ),
+                                  child: _Ranking(
+                                    roomId: roomId,
+                                    spotDifference: spotDifference,
                                   ),
                                 ),
                               ],
@@ -364,5 +331,54 @@ class SpotDifferenceController {
     _isRestrictedController.update((state) => true);
     await Future<void>.delayed(const Duration(seconds: 5));
     _isRestrictedController.update((state) => false);
+  }
+}
+
+class _Ranking extends HookConsumerWidget {
+  const _Ranking({required this.roomId, required this.spotDifference});
+
+  final String roomId;
+  final ReadSpotDifference spotDifference;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      children: [
+        ProgressTimeWidget(
+          startTime: DateTime.now(),
+        ),
+        const Divider(
+          height: 2,
+        ),
+        Expanded(
+          child: ref.watch(answersStreamProvider(roomId)).when(
+                data: (answers) {
+                  if (answers == null) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return ListView.builder(
+                    itemCount: answers.length,
+                    itemBuilder: (context, index) {
+                      final appUser = ref
+                          .watch(
+                            appUsersFutureProvider(answers[index].answerId),
+                          )
+                          .valueOrNull;
+                      return AnswerUserWidget(
+                        ranking: index + 1,
+                        name: appUser?.displayName ?? '',
+                        answerPoints: answers[index].pointIds.length,
+                        totalPoints: spotDifference.pointIds.length,
+                      );
+                    },
+                  );
+                },
+                error: (_, __) => const Center(child: Text('回答者の取得に失敗しました。')),
+                loading: () => const Center(child: CircularProgressIndicator()),
+              ),
+        ),
+      ],
+    );
   }
 }
