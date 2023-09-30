@@ -1,3 +1,4 @@
+import 'package:dart_flutter_common/list.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -183,14 +184,5 @@ class _RankingCardState extends State<_RankingCard>
         ),
       ),
     );
-  }
-}
-
-extension SafeIndexAccess<T> on List<T> {
-  T? safeGet(int index) {
-    if (index >= 0 && index < length) {
-      return this[index];
-    }
-    return null;
   }
 }
