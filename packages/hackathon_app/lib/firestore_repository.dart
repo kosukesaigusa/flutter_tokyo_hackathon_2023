@@ -5,10 +5,6 @@ final appUserRepositoryProvider = Provider.autoDispose<AppUserRepository>(
   (_) => AppUserRepository(),
 );
 
-final todoRepositoryProvider = Provider.autoDispose<TodoRepository>(
-  (_) => TodoRepository(),
-);
-
 final roomRepositoryProvider = Provider.autoDispose<RoomRepository>(
   (_) => RoomRepository(),
 );
@@ -30,3 +26,4 @@ final completedUserRepositoryProvider =
     Provider.autoDispose<CompletedUserRepository>(
   (_) => CompletedUserRepository(),
 );
+
