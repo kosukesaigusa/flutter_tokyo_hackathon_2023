@@ -82,20 +82,27 @@ class StartSpotDifferencePageState
                   ),
                 ),
                 // ルーム一覧を表示する
-                Container(
-                  color: Colors.amber,
+                SizedBox(
                   height: 500,
                   child: ListView.builder(
                     itemCount: roomAndSpotDifferences.length,
                     itemBuilder: (context, index) {
                       final room = roomAndSpotDifferences[index].$1;
                       final spotDifference = roomAndSpotDifferences[index].$2;
-                      return Row(
+                      return Column(
                         children: [
-                          // TODO
-                          // 画像表示 SpotDifferenceの right or left imageURLでよさそう
-                          Image.network(spotDifference.leftImageUrl),
-                          // 名前表示
+                          ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                            child: Image.network(
+                              spotDifference.thumbnailImageUrl,
+                              width: 500,
+                              height: 300,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                           Text(room.roomStatus.toString()),
                         ],
                       );
