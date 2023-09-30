@@ -1,0 +1,19 @@
+import 'package:firebase_common/firebase_common.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../firestore_repository.dart';
+
+final _answerStreamProvider = StreamProvider.autoDispose
+    .family<ReadAnswer?, ({String roomId, String appUserId})>((ref, param) {
+  final repository = ref.watch(answerRepositoryProvider);
+  return repository.subscribeRoomUserAnswer(
+    appUserId: param.appUserId,
+    roomId: param.roomId,
+  );
+});
+
+/// 指定した `roomId`, `appUserId` に一致する、正解した [Point] のリストを取得するプロバイダー
+final answeredPointIdsProvider = Provider.autoDispose
+    .family<List<String>, ({String roomId, String appUserId})>((ref, param) {
+  return ref.watch(_answerStreamProvider(param)).valueOrNull?.pointIds ?? [];
+});
