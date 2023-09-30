@@ -51,6 +51,23 @@ final completedUsersStreamProvider =
   },
 );
 
+/// [CompletedUser] のリストから [AppUser] のリストを変換する FutureProvider
+final completedAppUsersFutureProvider =
+    FutureProvider.autoDispose.family<List<ReadAppUser?>, String>(
+  (ref, roomId) async {
+    final appUserRepository = ref.watch(appUserRepositoryProvider);
+    final completedUsers =
+        ref.watch(completedUsersStreamProvider(roomId)).valueOrNull ?? [];
+    return Future.wait(
+      completedUsers.map(
+        (user) async {
+          return appUserRepository.fetch(userId: user.completedUserId);
+        },
+      ),
+    );
+  },
+);
+
 /// 指定した `roomId` に一致する [Room] の開始時刻から現在時刻までの経過時間を返すプロバイダー
 final elapsedTimeProvider = Provider.autoDispose.family<String, String>(
   (ref, roomId) {
