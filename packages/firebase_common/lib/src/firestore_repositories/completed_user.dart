@@ -21,9 +21,11 @@ class CompletedUserRepository {
   }) =>
       _query.subscribeDocuments(
         roomId: roomId,
-        queryBuilder: (query) => query.orderBy(
-          'createdAt',
-          descending: true,
-        ),
+        queryBuilder: (query) => query
+            .orderBy(
+              'createdAt',
+              descending: true,
+            )
+            .limit(10),
       );
 }
