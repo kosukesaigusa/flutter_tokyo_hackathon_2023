@@ -33,7 +33,7 @@ final roomsStreamProvider = StreamProvider.autoDispose<List<ReadRoom>?>((ref) {
 
 // roomごとのspotDifferenceをとってくる必要あり
 final roomAndSpotDifferencesFutureProvider =
-    FutureProvider.autoDispose<List<(ReadRoom, ReadSpotDifference)>?>(
+    FutureProvider.autoDispose<List<(ReadRoom, ReadSpotDifference)>>(
   (ref) {
     final rooms = ref.watch(roomsStreamProvider).valueOrNull ?? [];
     final spotDifferenceRepository =

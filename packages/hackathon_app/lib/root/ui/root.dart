@@ -9,7 +9,6 @@ import '../../spot_difference/ui/start_spot_difference.dart';
 final rootPageKey = Provider((ref) => GlobalKey<NavigatorState>());
 
 /// メインの [BottomNavigationBar] を含む画面。
-
 class RootPage extends HookConsumerWidget {
   const RootPage({super.key});
 

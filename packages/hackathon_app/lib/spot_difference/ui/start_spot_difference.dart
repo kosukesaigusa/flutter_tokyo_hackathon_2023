@@ -5,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../app_ui_feedback_controller.dart';
 import '../../app_user/app_user.dart';
-import '../../loading/ui/loading.dart';
 import '../spot_difference.dart';
 import 'create_room_dialog.dart';
 import 'spot_difference.dart';
@@ -48,7 +47,7 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
     final roomsAsyncValue = ref.watch(roomAndSpotDifferencesFutureProvider);
     return roomsAsyncValue.when(
       data: (roomAndSpotDifferencesData) {
-        final roomAndSpotDifferences = roomAndSpotDifferencesData ?? [];
+        final roomAndSpotDifferences = roomAndSpotDifferencesData;
         return Center(
           child: Padding(
             padding: const EdgeInsets.all(100),
@@ -173,8 +172,8 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
           ),
         );
       },
-      loading: () => const OverlayLoading(),
-      error: (error, stackTrace) => const Text('エラーが発生しました'),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, __) => const SizedBox(),
     );
   }
 }
