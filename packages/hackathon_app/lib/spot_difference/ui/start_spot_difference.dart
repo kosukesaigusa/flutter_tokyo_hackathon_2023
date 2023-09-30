@@ -82,8 +82,7 @@ class StartSpotDifferencePageState
                   ),
                 ),
                 // ルーム一覧を表示する
-                SizedBox(
-                  height: 500,
+                Expanded(
                   child: ListView.builder(
                     itemCount: roomAndSpotDifferences.length,
                     itemBuilder: (context, index) {
@@ -92,18 +91,34 @@ class StartSpotDifferencePageState
                       return Column(
                         children: [
                           ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(20),
                             ),
-                            child: Image.network(
-                              spotDifference.thumbnailImageUrl,
-                              width: 500,
-                              height: 300,
-                              fit: BoxFit.cover,
+                            child: Stack(
+                              children: [
+                                Image.network(
+                                  spotDifference.thumbnailImageUrl,
+                                  width: 500,
+                                  height: 300,
+                                  fit: BoxFit.cover,
+                                ),
+                                const Positioned.fill(
+                                  child: ColoredBox(
+                                    color: Color.fromARGB(106, 157, 157, 157),
+                                  ),
+                                ),
+                                Text(
+                                  spotDifference.name,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Text(room.roomStatus.toString()),
+                          const Gap(16),
                         ],
                       );
                     },
