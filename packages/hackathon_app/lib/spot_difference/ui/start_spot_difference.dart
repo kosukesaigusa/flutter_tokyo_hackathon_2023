@@ -1,3 +1,4 @@
+import 'package:firebase_common/firebase_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
@@ -50,17 +51,19 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
         final roomAndSpotDifferences = roomAndSpotDifferencesData;
         return Center(
           child: Padding(
-            padding: const EdgeInsets.all(100),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            padding: const EdgeInsets.all(8),
+            child: ListView(
               children: [
-                SizedBox(
-                  width: 300,
-                  child: TextField(
-                    controller: _displayNameTextEditingController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: '表示名を入力',
+                const Gap(32),
+                UnconstrainedBox(
+                  child: SizedBox(
+                    width: 300,
+                    child: TextField(
+                      controller: _displayNameTextEditingController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: '表示名を入力',
+                      ),
                     ),
                   ),
                 ),
@@ -115,57 +118,18 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                     child: const Text('参加する'),
                   ),
                 ),
-                // ルーム一覧を表示する
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: roomAndSpotDifferences.length,
-                    itemBuilder: (context, index) {
-                      final room = roomAndSpotDifferences[index].$1;
-                      final spotDifference = roomAndSpotDifferences[index].$2;
-                      return Column(
-                        children: [
-                          InkWell(
-                            onTap: () => selectedRoomId.value = room.roomId,
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(20),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Image.network(
-                                    spotDifference.thumbnailImageUrl,
-                                    width: 500,
-                                    height: 300,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  const Positioned.fill(
-                                    child: ColoredBox(
-                                      color: Color.fromARGB(106, 157, 157, 157),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 250,
-                                      left: 20,
-                                    ),
-                                    child: Text(
-                                      spotDifference.name,
-                                      style: const TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const Gap(16),
-                        ],
-                      );
-                    },
-                  ),
+                const Gap(32),
+                Column(
+                  children: roomAndSpotDifferences.map((roomAndSpotDifference) {
+                    final room = roomAndSpotDifference.$1;
+                    final spotDifference = roomAndSpotDifference.$2;
+
+                    return _RoomCard(
+                      room: room,
+                      spotDifference: spotDifference,
+                      selectedRoomId: selectedRoomId,
+                    );
+                  }).toList(),
                 ),
               ],
             ),
@@ -175,5 +139,115 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (_, __) => const SizedBox(),
     );
+  }
+}
+
+class _RoomCard extends HookWidget {
+  const _RoomCard({
+    required this.room,
+    required this.spotDifference,
+    required this.selectedRoomId,
+  });
+
+  final ReadRoom room;
+  final ReadSpotDifference spotDifference;
+  final ValueNotifier<String?> selectedRoomId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: () => selectedRoomId.value = room.roomId,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(20),
+            ),
+            child: Stack(
+              children: [
+                Image.network(
+                  spotDifference.thumbnailImageUrl,
+                  width: 500,
+                  height: 300,
+                  fit: BoxFit.cover,
+                ),
+                Positioned.fill(
+                  child: ColoredBox(
+                    color: selectedRoomId.value == room.roomId
+                        ? const Color.fromARGB(
+                            158,
+                            226,
+                            218,
+                            61,
+                          )
+                        : const Color.fromARGB(
+                            106,
+                            157,
+                            157,
+                            157,
+                          ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 10,
+                    left: 20,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        spotDifference.name,
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      _RoomStatusText(roomStatus: room.roomStatus),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const Gap(16),
+      ],
+    );
+  }
+}
+
+class _RoomStatusText extends StatelessWidget {
+  const _RoomStatusText({
+    required this.roomStatus,
+  });
+
+  final RoomStatus roomStatus;
+  final _textStyle = const TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    switch (roomStatus) {
+      case RoomStatus.pending:
+        return Text(
+          '待機中',
+          style: _textStyle,
+        );
+      case RoomStatus.playing:
+        return Text(
+          '開催中',
+          style: _textStyle,
+        );
+      case RoomStatus.completed:
+        return Text(
+          '終了',
+          style: _textStyle,
+        );
+    }
   }
 }
