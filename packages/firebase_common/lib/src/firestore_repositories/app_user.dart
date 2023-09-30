@@ -14,4 +14,7 @@ class AppUserRepository {
         createAppUser:
             CreateAppUser(displayName: displayName, imageUrl: imageUrl),
       );
+
+  Future<ReadAppUser?> fetch({required String userId}) async =>
+      _query.fetchDocument(userId: userId);
 }
