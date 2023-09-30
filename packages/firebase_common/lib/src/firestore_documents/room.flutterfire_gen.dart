@@ -10,6 +10,7 @@ class ReadRoom {
     required this.path,
     required this.spotDifferenceId,
     required this.roomStatus,
+    required this.maxAnswerCount,
     required this.startAt,
   });
 
@@ -21,6 +22,8 @@ class ReadRoom {
 
   final RoomStatus roomStatus;
 
+  final int maxAnswerCount;
+
   final DateTime? startAt;
 
   factory ReadRoom._fromJson(Map<String, dynamic> json) {
@@ -30,6 +33,7 @@ class ReadRoom {
       spotDifferenceId: json['spotDifferenceId'] as String,
       roomStatus:
           _roomStatusTypeConverter.fromJson(json['roomStatus'] as String),
+      maxAnswerCount: json['maxAnswerCount'] as int? ?? 10,
       startAt: (json['startAt'] as Timestamp?)?.toDate(),
     );
   }
@@ -48,17 +52,20 @@ class CreateRoom {
   const CreateRoom({
     required this.spotDifferenceId,
     required this.roomStatus,
+    this.maxAnswerCount = 10,
     this.startAt,
   });
 
   final String spotDifferenceId;
   final RoomStatus roomStatus;
+  final int maxAnswerCount;
   final DateTime? startAt;
 
   Map<String, dynamic> toJson() {
     return {
       'spotDifferenceId': spotDifferenceId,
       'roomStatus': _roomStatusTypeConverter.toJson(roomStatus),
+      'maxAnswerCount': maxAnswerCount,
       'startAt': startAt,
     };
   }
@@ -68,11 +75,13 @@ class UpdateRoom {
   const UpdateRoom({
     this.spotDifferenceId,
     this.roomStatus,
+    this.maxAnswerCount,
     this.startAt,
   });
 
   final String? spotDifferenceId;
   final RoomStatus? roomStatus;
+  final int? maxAnswerCount;
   final DateTime? startAt;
 
   Map<String, dynamic> toJson() {
@@ -80,6 +89,7 @@ class UpdateRoom {
       if (spotDifferenceId != null) 'spotDifferenceId': spotDifferenceId,
       if (roomStatus != null)
         'roomStatus': _roomStatusTypeConverter.toJson(roomStatus!),
+      if (maxAnswerCount != null) 'maxAnswerCount': maxAnswerCount,
       if (startAt != null) 'startAt': startAt,
     };
   }

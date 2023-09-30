@@ -8,6 +8,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../auth/ui/auth_controller.dart';
+import '../spot_difference.dart';
 import 'answer_user_widget.dart';
 import 'progress_time_widget.dart';
 
@@ -61,70 +62,78 @@ class SpotDifferenceRoom extends ConsumerWidget {
 
     return SafeArea(
       child: Scaffold(
-        body: Stack(
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Stack(
-                            children: [
-                              _SpotDifference(
-                                answerOffsets: answerOffsets,
-                                completedOffsets: completedOffsets,
-                                path:
-                                    'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/left1.png?alt=media&token=33a33476-d6d8-496b-8397-4057380de429',
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Gap(20),
-                        Expanded(
-                          child: _SpotDifference(
-                            answerOffsets: answerOffsets,
-                            completedOffsets: completedOffsets,
-                            path:
-                                'https://firebasestorage.googleapis.com/v0/b/flutter-tokyo-hackathon-2023.appspot.com/o/right2.png?alt=media&token=460c5614-9947-4581-8537-f672a9f8c55d',
-                          ),
-                        ),
-                        // TODO 解答状況を描画
-                        Container(
-                          color: Colors.grey[100],
-                          width: deviceWidth / 8,
-                          child: Column(
-                            children: [
-                              ProgressTimeWidget(
-                                startTime: DateTime.now(),
-                              ),
-                              Expanded(
-                                child: ListView.builder(
-                                  itemCount: appUsers.length,
-                                  itemBuilder: (context, index) {
-                                    return AnswerUserWidget(
-                                      ranking: index + 1,
-                                      name: appUsers[index].displayName,
-                                    );
-                                  },
+        body: ref.watch(spotDifferenceStreamProvider(roomId)).when(
+              data: (spotDifference) {
+                if (spotDifference == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return Stack(
+                  children: [
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Stack(
+                                    children: [
+                                      _SpotDifference(
+                                        answerOffsets: answerOffsets,
+                                        completedOffsets: completedOffsets,
+                                        path: spotDifference.leftImageUrl,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                                const Gap(20),
+                                Expanded(
+                                  child: _SpotDifference(
+                                    answerOffsets: answerOffsets,
+                                    completedOffsets: completedOffsets,
+                                    path: spotDifference.rightImageUrl,
+                                  ),
+                                ),
+                                // TODO 解答状況を描画
+                                Container(
+                                  color: Colors.grey[100],
+                                  width: deviceWidth / 8,
+                                  child: Column(
+                                    children: [
+                                      ProgressTimeWidget(
+                                        startTime: DateTime.now(),
+                                      ),
+                                      Expanded(
+                                        child: ListView.builder(
+                                          itemCount: appUsers.length,
+                                          itemBuilder: (context, index) {
+                                            return AnswerUserWidget(
+                                              ranking: index + 1,
+                                              name: appUsers[index].displayName,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    if (ref.watch(isRestrictedProvider))
+                      // TODO ウィジェット作成
+                      const _RestrictionLoading(),
+                  ],
+                );
+              },
+              error: (_, __) =>
+                  const Center(child: Text('間違い探しルームの取得に失敗しました。')),
+              loading: () => const Center(child: CircularProgressIndicator()),
             ),
-            if (ref.watch(isRestrictedProvider))
-              // TODO ウィジェット作成
-              const _RestrictionLoading(),
-          ],
-        ),
         // TODO: 開発中にサインアウトできる手段を与えるために一時的に表示している。
         floatingActionButton: FloatingActionButton(
           onPressed: () => ref.read(authControllerProvider).signOut(),
@@ -144,31 +153,32 @@ class _RestrictionLoading extends StatelessWidget {
       color: Colors.black26,
       child: SizedBox.expand(
         child: Center(
-            child: Container(
-          width: 200,
-          height: 200,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '不正解！\n5秒利用禁止です！',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+          child: Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '不正解！\n5秒利用禁止です！',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                // TODO タイマー or 煽りアニメーション入れたい
-                CircularProgressIndicator(),
-              ],
+                  // TODO タイマー or 煽りアニメーション入れたい
+                  CircularProgressIndicator(),
+                ],
+              ),
             ),
           ),
-        )),
+        ),
       ),
     );
   }
@@ -347,12 +357,12 @@ class SpotDifferenceController {
     required StateController<bool> isRestrictedController,
   }) : _isRestrictedController = isRestrictedController;
 
-  final StateController _isRestrictedController;
+  final StateController<bool> _isRestrictedController;
 
   /// 利用を5秒間制限する
   Future<void> restrict() async {
     _isRestrictedController.update((state) => true);
-    await Future.delayed(const Duration(seconds: 5));
+    await Future<void>.delayed(const Duration(seconds: 5));
     _isRestrictedController.update((state) => false);
   }
 }
