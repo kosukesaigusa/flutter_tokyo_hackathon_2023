@@ -3,7 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../firestore_repository.dart';
 
-final _answerStreamProvider = StreamProvider.autoDispose
+final _userAnswerStreamProvider = StreamProvider.autoDispose
     .family<ReadAnswer?, ({String roomId, String appUserId})>((ref, param) {
   final repository = ref.watch(answerRepositoryProvider);
   return repository.subscribeRoomUserAnswer(
@@ -15,7 +15,8 @@ final _answerStreamProvider = StreamProvider.autoDispose
 /// 指定した `roomId`, `appUserId` に一致する、正解した [Point] の id のリストを取得するプロバイダー
 final answeredPointIdsProvider = Provider.autoDispose
     .family<List<String>, ({String roomId, String appUserId})>((ref, param) {
-  return ref.watch(_answerStreamProvider(param)).valueOrNull?.pointIds ?? [];
+  return ref.watch(_userAnswerStreamProvider(param)).valueOrNull?.pointIds ??
+      [];
 });
 
 /// 指定した [SpotDifference] の答えの [Point] のリストを購読する StreamProvider
