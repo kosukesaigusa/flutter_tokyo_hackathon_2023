@@ -33,11 +33,6 @@ class MainApp extends ConsumerWidget {
         sliderTheme: SliderThemeData(
           overlayShape: SliderComponentShape.noOverlay,
         ),
-        appBarTheme: Theme.of(context).appBarTheme.copyWith(
-              centerTitle: true,
-              elevation: 4,
-              shadowColor: Theme.of(context).shadowColor,
-            ),
         textTheme: GoogleFonts.notoSansJpTextTheme(
           Theme.of(context).textTheme,
         ),
