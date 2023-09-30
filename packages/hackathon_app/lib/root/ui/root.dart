@@ -26,11 +26,11 @@ class RootPage extends ConsumerWidget {
       body: AuthDependentBuilder(
         // onAuthenticated 以下ではログイン済みで
         onAuthenticated: (userId) {
-          /// TODO: ここでルームの選択状況や開始状況に応じて表示する UI を変更する。
           return SpotDifferenceRoom(roomId: '仮の Room ID', userId: userId);
         },
         onUnAuthenticated: SignInAnonymouslyPage.new,
       ),
+      // body: const SignInAnonymouslyPage(),
     );
   }
 }
