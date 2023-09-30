@@ -22,9 +22,11 @@ class AnswerRepository {
   /// 指定した [roomId] を持つ [Answer] を作成する
   Future<void> createAnswer({
     required String roomId,
+    required String appUserId,
   }) async {
-    await _query.add(
+    await _query.set(
       roomId: roomId,
+      answerId: appUserId,
       createAnswer: CreateAnswer(
         roomId: roomId,
         pointIds: const ActualValue([]),
