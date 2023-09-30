@@ -8,11 +8,10 @@ class CompletedUserRepository {
     required String roomId,
     required String appUserId,
   }) async {
-    await _query.add(
+    await _query.set(
       roomId: roomId,
-      createCompletedUser: CreateCompletedUser(
-        appUserId: appUserId,
-      ),
+      completedUserId: appUserId,
+      createCompletedUser: const CreateCompletedUser(),
     );
   }
 
@@ -20,5 +19,13 @@ class CompletedUserRepository {
   Stream<List<ReadCompletedUser>> subscribeCompletedUsers({
     required String roomId,
   }) =>
-      _query.subscribeDocuments(roomId: roomId);
+      _query.subscribeDocuments(
+        roomId: roomId,
+        queryBuilder: (query) => query
+            .orderBy(
+              'createdAt',
+              descending: true,
+            )
+            .limit(10),
+      );
 }
