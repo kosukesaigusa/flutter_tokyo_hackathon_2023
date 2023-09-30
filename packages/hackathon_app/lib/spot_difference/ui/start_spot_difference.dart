@@ -1,3 +1,4 @@
+import 'package:firebase_common/firebase_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
@@ -123,61 +124,11 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                   children: roomAndSpotDifferences.map((roomAndSpotDifference) {
                     final room = roomAndSpotDifference.$1;
                     final spotDifference = roomAndSpotDifference.$2;
-                    final isSelectRoom = selectedRoomId.value == room.roomId;
 
-                    return Column(
-                      children: [
-                        InkWell(
-                          onTap: () => selectedRoomId.value = room.roomId,
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(20),
-                            ),
-                            child: Stack(
-                              children: [
-                                Image.network(
-                                  spotDifference.thumbnailImageUrl,
-                                  width: 500,
-                                  height: 300,
-                                  fit: BoxFit.cover,
-                                ),
-                                Positioned.fill(
-                                  child: ColoredBox(
-                                    color: isSelectRoom
-                                        ? const Color.fromARGB(
-                                            158,
-                                            226,
-                                            218,
-                                            61,
-                                          )
-                                        : const Color.fromARGB(
-                                            106,
-                                            157,
-                                            157,
-                                            157,
-                                          ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 250,
-                                    left: 20,
-                                  ),
-                                  child: Text(
-                                    spotDifference.name,
-                                    style: const TextStyle(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const Gap(16),
-                      ],
+                    return _RoomCard(
+                      room: room,
+                      spotDifference: spotDifference,
+                      selectedRoomId: selectedRoomId,
                     );
                   }).toList(),
                 ),
@@ -188,6 +139,76 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
       },
       loading: () => const OverlayLoading(),
       error: (error, stackTrace) => const Text('エラーが発生しました'),
+    );
+  }
+}
+
+class _RoomCard extends HookWidget {
+  const _RoomCard({
+    required this.room,
+    required this.spotDifference,
+    required this.selectedRoomId,
+  });
+
+  final ReadRoom room;
+  final ReadSpotDifference spotDifference;
+  final ValueNotifier<String?> selectedRoomId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: () => selectedRoomId.value = room.roomId,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(20),
+            ),
+            child: Stack(
+              children: [
+                Image.network(
+                  spotDifference.thumbnailImageUrl,
+                  width: 500,
+                  height: 300,
+                  fit: BoxFit.cover,
+                ),
+                Positioned.fill(
+                  child: ColoredBox(
+                    color: selectedRoomId.value == room.roomId
+                        ? const Color.fromARGB(
+                            158,
+                            226,
+                            218,
+                            61,
+                          )
+                        : const Color.fromARGB(
+                            106,
+                            157,
+                            157,
+                            157,
+                          ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 250,
+                    left: 20,
+                  ),
+                  child: Text(
+                    spotDifference.name,
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const Gap(16),
+      ],
     );
   }
 }
