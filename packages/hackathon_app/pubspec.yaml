@@ -8,6 +8,7 @@ environment:
   sdk: ">=3.1.2 <4.0.0"
 
 dependencies:
+  collection: ^1.17.2
   dart_flutter_common:
     path: ../dart_flutter_common
   firebase_auth: ^4.10.0
