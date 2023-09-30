@@ -33,3 +33,21 @@ final answersStreamProvider =
   return repository.subscribeRoomAnswers(roomId: roomId);
 });
 
+/// 指定した `roomId` に一致する [Room] を購読する StreamProvider
+final _roomStreamProvider =
+    StreamProvider.autoDispose.family<ReadRoom?, String>(
+  (ref, roomId) {
+    return ref.watch(roomRepositoryProvider).subscribeRoom(roomId: roomId);
+  },
+);
+
+/// 指定した `roomId` に一致する [Room] の開始時刻から現在時刻までの経過時間を返すプロバイダー
+final elapsedTimeProvider = Provider.autoDispose.family<String, String>(
+  (ref, roomId) {
+    final room = ref.watch(_roomStreamProvider(roomId)).valueOrNull;
+    if (room == null || room.startAt == null) return '';
+    final startTime = room.startAt!;
+    final elapsedTime = DateTime.now().difference(startTime);
+    return elapsedTime.toString().split('.').first;
+  },
+);
