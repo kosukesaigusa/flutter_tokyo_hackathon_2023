@@ -4,6 +4,7 @@ import 'package:flutterfire_gen_utils/flutterfire_gen_utils.dart';
 
 part 'answer.flutterfire_gen.dart';
 
+// documentId は appUserId に一致する
 @FirestoreDocument(
   path: 'rooms/{roomId}/answers',
   documentName: 'answer',
@@ -11,15 +12,12 @@ part 'answer.flutterfire_gen.dart';
 class Answer {
   const Answer({
     required this.roomId,
-    required this.appUserId,
     required this.pointIds,
     this.createdAt,
     this.updatedAt,
   });
 
   final String roomId;
-
-  final String appUserId;
 
   @AllowFieldValue()
   final List<String> pointIds;
