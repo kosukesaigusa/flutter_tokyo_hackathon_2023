@@ -54,15 +54,12 @@ class SignInAnonymouslyPageState extends ConsumerState<SignInAnonymouslyPage> {
             const Gap(32),
             Center(
               child: ElevatedButton(
-                onPressed: () async {
-                  final navigator = Navigator.of(context);
-                  await ref.read(authControllerProvider).signInAnonymously(
-                        displayName: _displayNameTextEditingController.text,
-                        // TODO: 適当な画像を選ばせると良さそう
-                        // imageUrl: '',
-                      );
-                  navigator.pop();
-                },
+                onPressed: () =>
+                    ref.read(authControllerProvider).signInAnonymously(
+                          displayName: _displayNameTextEditingController.text,
+                          // TODO: 適当な画像を選ばせると良さそう
+                          // imageUrl: '',
+                        ),
                 child: const Text('サインイン'),
               ),
             ),
