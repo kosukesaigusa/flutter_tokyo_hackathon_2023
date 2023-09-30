@@ -1,11 +1,13 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../app_ui_feedback_controller.dart';
 import '../../loading/ui/loading.dart';
 import '../spot_difference.dart';
+import 'create_room_dialog.dart';
+import 'spot_difference.dart';
 
 // TODO
 // - roomsを購読(status:pending or playing)
@@ -14,24 +16,17 @@ import '../spot_difference.dart';
 // - roomのサムネ表示
 // - roomごとに募集中とか入れる
 
-@RoutePage()
-class StartSpotDifferencePage extends StatefulHookConsumerWidget {
-  const StartSpotDifferencePage({super.key});
+class StartSpotDifferenceUI extends StatefulHookConsumerWidget {
+  const StartSpotDifferenceUI({required this.userId, super.key});
 
-  /// [AutoRoute] で指定するパス文字列。
-  static const path = '/signInAnonymously';
-
-  /// [StartSpotDifferencePage] に遷移する際に `context.router.pushNamed` で
-  /// 指定する文字列。
-  static const location = path;
+  final String userId;
 
   @override
-  ConsumerState<StartSpotDifferencePage> createState() =>
-      StartSpotDifferencePageState();
+  ConsumerState<StartSpotDifferenceUI> createState() =>
+      StartSpotDifferenceUIState();
 }
 
-class StartSpotDifferencePageState
-    extends ConsumerState<StartSpotDifferencePage> {
+class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
   late final TextEditingController _displayNameTextEditingController;
 
   @override
@@ -72,14 +67,44 @@ class StartSpotDifferencePageState
                 const Gap(32),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () => Navigator.push<void>(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (context) =>
+                            CreateRoomUI(userId: widget.userId),
+                        fullscreenDialog: true,
+                      ),
+                    ),
+                    child: const Text('ルームを作成する'),
+                  ),
+                ),
+                const Gap(32),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
                       // ルーム選択なし or 表示名未入力の場合は何もしない
-                      if (selectedRoomId.value == null ||
-                          _displayNameTextEditingController.text.isEmpty) {
+                      final roomId = selectedRoomId.value;
+                      if (roomId == null) {
+                        ref
+                            .read(appUIFeedbackControllerProvider)
+                            .showSnackBar('間違い探しルームを選択してください');
                         return;
                       }
-
-                      // TODO: ここでルームに参加する処理を書く
+                      if (_displayNameTextEditingController.text.isEmpty) {
+                        ref
+                            .read(appUIFeedbackControllerProvider)
+                            .showSnackBar('表示名を入力してください');
+                        return;
+                      }
+                      await Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute<void>(
+                          builder: (context) => SpotDifferenceRoom(
+                            userId: widget.userId,
+                            roomId: roomId,
+                          ),
+                        ),
+                        (route) => false,
+                      );
                     },
                     child: const Text('参加する'),
                   ),

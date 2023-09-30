@@ -40,17 +40,12 @@ class AuthService {
 
   static final _auth = FirebaseAuth.instance;
 
-  /// 表示名 [displayName] と画像 URL [imageUrl]（任意）を与え、匿名アカウントでサインインし、
-  /// ユーザードキュメントを作成する。
-  Future<UserCredential> signInAnonymously({
-    required String displayName,
-    String? imageUrl,
-  }) async {
+  /// 匿名アカウントでサインインし、ユーザードキュメントを作成する。
+  Future<UserCredential> signInAnonymously() async {
     final userCredential = await _auth.signInAnonymously();
     await _appUserService.createOrUpdateUser(
       userId: userCredential.user!.uid,
-      displayName: displayName,
-      imageUrl: imageUrl ?? '',
+      displayName: '',
     );
     return userCredential;
   }

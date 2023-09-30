@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../auth.dart';
-import 'sign_in_buttons.dart';
 
 /// Firebase に Auth にサインイン済みの場合にのみ [onAuthenticated] で渡した
 /// ウィジェットを表示する。
@@ -29,7 +28,7 @@ class AuthDependentBuilder extends ConsumerWidget {
       if (onUnAuthenticated != null) {
         return onUnAuthenticated!();
       } else {
-        return const SignedOut();
+        return const SizedBox();
       }
     }
     return onAuthenticated(userId);
@@ -69,7 +68,7 @@ class UserAuthDependentBuilder extends ConsumerWidget {
       if (onUnAuthenticated != null) {
         return onUnAuthenticated!();
       } else {
-        return const SignedOut();
+        return const SizedBox();
       }
     }
     return onAuthenticated(userId, userId == this.userId);

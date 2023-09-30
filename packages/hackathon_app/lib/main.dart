@@ -7,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'app_ui_feedback_controller.dart';
 import 'firebase_options.dart';
 import 'loading/ui/loading.dart';
-import 'router/router.dart';
+import 'root/ui/root.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,14 +19,12 @@ void main() async {
   );
 }
 
-final _appRouterProvider = Provider.autoDispose<AppRouter>((_) => AppRouter());
-
 class MainApp extends ConsumerWidget {
   const MainApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp.router(
+    return MaterialApp(
       title: 'Widget Wizards',
       theme: ThemeData(
         useMaterial3: true,
@@ -48,7 +46,7 @@ class MainApp extends ConsumerWidget {
         Locale('ja', 'JP'),
       ],
       debugShowCheckedModeBanner: false,
-      routerConfig: ref.watch(_appRouterProvider).config(),
+      home: const RootPage(),
       builder: (context, child) {
         return Navigator(
           key: ref.watch(navigatorKeyProvider),
