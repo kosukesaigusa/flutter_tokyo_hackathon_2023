@@ -74,7 +74,18 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                 }
               });
             }
-            final topAnswers = answers.take(10).toList().reversed.toList();
+            final topAnswers = answers.take(10).toList();
+
+            final width = MediaQuery.of(context).size.width;
+
+            double fontSize;
+            if (width < 1015) {
+              fontSize = 200;
+            } else if (width < 850) {
+              fontSize = 70;
+            } else {
+              fontSize = 250;
+            }
 
             return Scaffold(
               backgroundColor: const Color(0xFFFAFAFA),
@@ -111,11 +122,11 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                     ),
                     child: Stack(
                       children: [
-                        const Center(
+                        Center(
                           child: Text(
                             '結果発表',
                             style: TextStyle(
-                              fontSize: 250,
+                              fontSize: fontSize,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -145,7 +156,7 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                                     ),
                                   )
                                   .valueOrNull;
-                              final rank = answers.length - (index + 1);
+                              final rank = topAnswers.length - (index + 1);
 
                               // 一番最後までスクロールさせる
                               if (index == _controllers.length - 1) {
