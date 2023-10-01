@@ -12,13 +12,6 @@ import '../spot_difference.dart';
 import 'create_room_dialog.dart';
 import 'room_switching.dart';
 
-// TODO
-// - roomsを購読(status:pending or playing)
-// - roomを選択できるようにする
-// -「参加する」ボタンを押すとそのルームに遷移
-// - roomのサムネ表示
-// - roomごとに募集中とか入れる
-
 class StartSpotDifferenceUI extends StatefulHookConsumerWidget {
   const StartSpotDifferenceUI({required this.userId, super.key});
 
@@ -122,8 +115,16 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                 }).toList();
                 return Column(
                   children: [
-                    Row(
-                      children: [...roomCards],
+                    if (rooms.isNotEmpty) ...[
+                      const Text('間違い探しルームを選択してください'),
+                      const Gap(16)
+                    ],
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [...roomCards],
+                      ),
                     ),
                     const Gap(32),
                     if (rooms.isEmpty || kDebugMode)
@@ -231,63 +232,66 @@ class _RoomCard extends ConsumerWidget {
         if (spotDifference == null) {
           return const SizedBox();
         }
-        return Column(
-          children: [
-            InkWell(
-              onTap: () => selectedRoomId.value = room.roomId,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
-                ),
-                child: Stack(
-                  children: [
-                    GenericImage.rectangle(
-                      imageUrl: spotDifference.thumbnailImageUrl,
-                      maxWidth: 500,
-                    ),
-                    Positioned.fill(
-                      child: ColoredBox(
-                        color: selectedRoomId.value == room.roomId
-                            ? const Color.fromARGB(
-                                158,
-                                226,
-                                218,
-                                61,
-                              )
-                            : const Color.fromARGB(
-                                106,
-                                157,
-                                157,
-                                157,
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            children: [
+              InkWell(
+                onTap: () => selectedRoomId.value = room.roomId,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  child: Stack(
+                    children: [
+                      GenericImage.rectangle(
+                        imageUrl: spotDifference.thumbnailImageUrl,
+                        maxWidth: 500,
+                      ),
+                      Positioned.fill(
+                        child: ColoredBox(
+                          color: selectedRoomId.value == room.roomId
+                              ? const Color.fromARGB(
+                                  158,
+                                  226,
+                                  218,
+                                  61,
+                                )
+                              : const Color.fromARGB(
+                                  106,
+                                  157,
+                                  157,
+                                  157,
+                                ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 10,
+                          left: 20,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              spotDifference.name,
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                        left: 20,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            spotDifference.name,
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
                             ),
-                          ),
-                          _RoomStatusText(roomStatus: room.roomStatus),
-                        ],
+                            _RoomStatusText(roomStatus: room.roomStatus),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const Gap(16),
-          ],
+              const Gap(16),
+            ],
+          ),
         );
       },
       loading: () => const SizedBox(),
