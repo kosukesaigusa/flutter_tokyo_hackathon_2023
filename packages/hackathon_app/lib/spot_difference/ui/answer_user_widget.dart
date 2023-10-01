@@ -33,59 +33,58 @@ class AnswerUserWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 50,
-          child: Center(
-            child: Row(
-              children: [
-                Container(
-                  width: 30,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    ranking.toString(),
-                    style: _textStyle(ranking),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                GenericImage.circle(
-                  imageUrl: imageUrl,
-                  size: 30,
-                  showDetailOnTap: false,
-                ),
-                const Gap(8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        name,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        '$answerPoints/$totalPoints',
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+    return Container(
+      height: 50,
+      margin: const EdgeInsets.fromLTRB(2, 8, 2, 0),
+      decoration: BoxDecoration(
+        color:
+            Theme.of(context).buttonTheme.colorScheme?.primary.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Center(
+        child: Row(
+          children: [
+            Container(
+              width: 30,
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                ranking.toString(),
+                style: _textStyle(ranking),
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
+            GenericImage.circle(
+              imageUrl: imageUrl,
+              size: 30,
+              showDetailOnTap: false,
+            ),
+            const Gap(8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    name,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  Text(
+                    '$answerPoints/$totalPoints',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        const Divider(
-          height: 2,
-        ),
-      ],
+      ),
     );
   }
 }
