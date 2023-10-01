@@ -29,6 +29,7 @@ functions.setGlobalOptions({ region: `asia-northeast1` })
 
 /** ここでデプロイする関数をまとめる。 */
 import { onCreateCompletedUser } from './onCreateCompletedUser'
+import { onUpdateRoom } from './onUpdateRoom'
 
 // /** index.ts で import してデプロイする関数一覧。 */
-export { onCreateCompletedUser }
+export { onCreateCompletedUser, onUpdateRoom }
