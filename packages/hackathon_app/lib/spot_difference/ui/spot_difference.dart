@@ -67,12 +67,13 @@ class SpotDifferenceRoom extends ConsumerWidget {
                                   Text(
                                     '間違いを見つけて長押ししてね',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],
                               ),
+                              const Gap(8),
                               Row(
                                 children: [
                                   _SpotDifference(
