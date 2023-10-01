@@ -12,13 +12,6 @@ import '../spot_difference.dart';
 import 'create_room_dialog.dart';
 import 'room_switching.dart';
 
-// TODO
-// - roomsを購読(status:pending or playing)
-// - roomを選択できるようにする
-// -「参加する」ボタンを押すとそのルームに遷移
-// - roomのサムネ表示
-// - roomごとに募集中とか入れる
-
 class StartSpotDifferenceUI extends StatefulHookConsumerWidget {
   const StartSpotDifferenceUI({required this.userId, super.key});
 
