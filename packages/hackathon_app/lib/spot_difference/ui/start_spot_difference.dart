@@ -133,9 +133,16 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                         .showSnackBar('表示名を入力してください');
                     return;
                   }
+                  final icons = ref.read(iconsSteamProvider).valueOrNull ?? [];
+                  final imageUrl = icons
+                      .firstWhere(
+                        (icon) => icon.iconId == selectedIconId.value,
+                      )
+                      .imageUrl;
                   await ref.read(appUserService).createOrUpdateUser(
                         userId: widget.userId,
                         displayName: displayName,
+                        imageUrl: imageUrl,
                       );
 
                   // 参加時に空のAnswerを作成する
