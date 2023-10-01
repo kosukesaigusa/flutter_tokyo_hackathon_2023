@@ -78,17 +78,13 @@ class WaitingRoomUI extends ConsumerWidget {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: Lottie.asset(
-                          'assets/lottie/loading.json',
-                          width: 550,
-                          height: 550,
-                          repeat: true,
-                          reverse: false,
-                          animate: true,
-                        ),
-                      ),
+                    Lottie.asset(
+                      'assets/lottie/loading.json',
+                      width: 550,
+                      height: 550,
+                      repeat: true,
+                      reverse: false,
+                      animate: true,
                     ),
                     if (userId == room.createdByAppUserId)
                       Center(
