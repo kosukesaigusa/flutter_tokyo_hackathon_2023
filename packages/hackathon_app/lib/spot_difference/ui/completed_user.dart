@@ -45,7 +45,7 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
   @override
   Widget build(BuildContext context) {
     final completedAppUsersAsyncValue =
-        ref.watch(completedAppUsersFutureProvider(widget.roomId));
+        ref.watch(answeredAppUsersFutureProvider(widget.roomId));
     return completedAppUsersAsyncValue.when(
       data: (appUsers) {
         return Scaffold(
