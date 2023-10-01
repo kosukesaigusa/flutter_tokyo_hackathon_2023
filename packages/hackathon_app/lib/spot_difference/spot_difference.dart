@@ -123,6 +123,7 @@ final answeredAppUsersFutureProvider =
     });
     return Future.wait(
       answers
+          .take(10)
           .map(
             (user) async {
               return appUserRepository.fetch(userId: user.answerId);
