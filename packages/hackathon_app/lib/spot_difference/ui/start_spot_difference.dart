@@ -77,12 +77,26 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
               data: (data) {
                 final icons = data ?? [];
                 final iconUIs = icons.map((icon) {
+                  final isSelectedIcon = selectedIconId.value == icon.iconId;
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: GenericImage.circle(
-                      imageUrl: icon.imageUrl,
-                      onTap: () => selectedIconId.value = icon.iconId,
-                      showDetailOnTap: false,
+                    child: Stack(
+                      children: [
+                        GenericImage.circle(
+                          imageUrl: icon.imageUrl,
+                          onTap: () => selectedIconId.value = icon.iconId,
+                          showDetailOnTap: false,
+                        ),
+                        if (isSelectedIcon)
+                          Positioned.fill(
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Color.fromARGB(113, 255, 204, 128),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   );
                 }).toList();
