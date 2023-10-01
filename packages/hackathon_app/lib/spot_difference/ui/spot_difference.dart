@@ -120,8 +120,10 @@ class SpotDifferenceRoom extends ConsumerWidget {
 }
 
 class _AnswerStatusPopUp extends StatelessWidget {
-  const _AnswerStatusPopUp(
-      {required this.message, required this.animationPath});
+  const _AnswerStatusPopUp({
+    required this.message,
+    required this.animationPath,
+  });
 
   final String message;
   final String animationPath;
@@ -413,6 +415,9 @@ class _Ranking extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (answers.isNotEmpty) {
       answers.sort((a, b) {
+        if (a.updatedAt == null || b.updatedAt == null) {
+          return 0;
+        }
         if (a.pointIds.length > b.pointIds.length) {
           return -1;
         } else if (a.pointIds.length < b.pointIds.length) {
@@ -461,7 +466,7 @@ class _Ranking extends HookConsumerWidget {
               itemBuilder: (context, index) {
                 final appUser = ref
                     .watch(
-                      appUsersFutureProvider(answers[index].answerId),
+                      appUsersStreamProvider(answers[index].answerId),
                     )
                     .valueOrNull;
                 return AnswerUserWidget(
