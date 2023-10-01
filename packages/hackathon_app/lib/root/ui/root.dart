@@ -35,6 +35,3 @@ class RootPage extends HookConsumerWidget {
     );
   }
 }
-
-// TODO: 仮の roomId で決め打ちしているので修正する。
-const _roomId = 'a6aylO1igdisuWJZUpcv';

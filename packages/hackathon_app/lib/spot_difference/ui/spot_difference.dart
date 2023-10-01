@@ -35,7 +35,6 @@ class SpotDifferenceRoom extends ConsumerWidget {
       return const SizedBox();
     }
 
-    // TODO nullable外すか検討
     final answers = ref.watch(answersStreamProvider(roomId)).valueOrNull;
     if (answers == null) {
       return const SizedBox();
@@ -74,24 +73,30 @@ class SpotDifferenceRoom extends ConsumerWidget {
                                 ],
                               ),
                               const Gap(8),
-                              Row(
-                                children: [
-                                  _SpotDifference(
-                                    roomId: roomId,
-                                    answerId: userId,
-                                    answerPoints: points,
-                                    completedPointIds: myAnswer?.pointIds ?? [],
-                                    path: spotDifference.leftImageUrl,
-                                  ),
-                                  const Gap(20),
-                                  _SpotDifference(
-                                    roomId: roomId,
-                                    answerId: userId,
-                                    answerPoints: points,
-                                    completedPointIds: myAnswer?.pointIds ?? [],
-                                    path: spotDifference.rightImageUrl,
-                                  ),
-                                ],
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 2),
+                                child: Row(
+                                  children: [
+                                    _SpotDifference(
+                                      roomId: roomId,
+                                      answerId: userId,
+                                      answerPoints: points,
+                                      completedPointIds:
+                                          myAnswer?.pointIds ?? [],
+                                      path: spotDifference.leftImageUrl,
+                                    ),
+                                    const Gap(2),
+                                    _SpotDifference(
+                                      roomId: roomId,
+                                      answerId: userId,
+                                      answerPoints: points,
+                                      completedPointIds:
+                                          myAnswer?.pointIds ?? [],
+                                      path: spotDifference.rightImageUrl,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
