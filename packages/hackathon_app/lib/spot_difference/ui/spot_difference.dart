@@ -429,7 +429,7 @@ class _Ranking extends HookConsumerWidget {
     }
 
     return Container(
-      width: 150,
+      width: 180,
       decoration: BoxDecoration(
         border: Border(
           left: BorderSide(
@@ -472,6 +472,7 @@ class _Ranking extends HookConsumerWidget {
                 return AnswerUserWidget(
                   ranking: index + 1,
                   name: appUser?.displayName ?? '',
+                  imageUrl: appUser?.imageUrl ?? '',
                   answerPoints: answers[index].pointIds.length,
                   totalPoints: spotDifference.pointIds.length,
                 );

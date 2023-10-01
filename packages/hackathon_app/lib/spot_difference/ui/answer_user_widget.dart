@@ -1,16 +1,20 @@
+import 'package:dart_flutter_common/dart_flutter_common.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class AnswerUserWidget extends StatelessWidget {
   const AnswerUserWidget({
     super.key,
     required this.ranking,
     required this.name,
+    required this.imageUrl,
     required this.totalPoints,
     required this.answerPoints,
   });
 
   final int ranking;
   final String name;
+  final String imageUrl;
   final int totalPoints;
   final int answerPoints;
 
@@ -45,6 +49,12 @@ class AnswerUserWidget extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
+                GenericImage.circle(
+                  imageUrl: imageUrl,
+                  size: 30,
+                  showDetailOnTap: false,
+                ),
+                const Gap(8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
