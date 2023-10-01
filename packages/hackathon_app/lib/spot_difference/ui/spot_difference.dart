@@ -279,7 +279,6 @@ class _SpotDifference extends HookConsumerWidget {
           GestureDetector(
             onLongPressStart: (details) {
               // 現在地点と正解のリストを比較
-
               for (final e in scaledAnswerPoints.value) {
                 final scaledThreshold =
                     threshold * size.value.height / defaultDifferenceSize;
@@ -288,22 +287,26 @@ class _SpotDifference extends HookConsumerWidget {
                 final distance =
                     (details.localPosition - scaledAnswerOffset).distance;
                 final isNearShowDifferenceOffset = distance < scaledThreshold;
-                print(details.localPosition);
-                print(isNearShowDifferenceOffset);
 
-                //  正解している場合、idを追加&円を描画
+                //  正解している場合
                 if (isNearShowDifferenceOffset) {
+                  // 既に正解している箇所であれば処理を終了（不正解とまではしない）
+                  if (completedPointIds.contains(e.pointId)) {
+                    return;
+                  }
+
+                  //  データの更新とお祝いポップアップの表示
                   ref.read(spotDifferenceServiceProvider).addPoint(
                         roomId: roomId,
                         answerId: answerId,
                         pointId: e.pointId,
                       );
 
-                  //  正解した場合、そのOffset周りに円を描画
                   ref.read(spotDifferenceControllerProvider).celebrate();
                   return;
                 }
               }
+              // 不正解の場合、制限をかける
               ref.read(spotDifferenceControllerProvider).restrict();
             },
             child: GenericImage.rectangle(
@@ -327,6 +330,7 @@ class _SpotDifference extends HookConsumerWidget {
   }
 }
 
+/// 正解した箇所に表示される赤丸
 class _PositionedCircle extends StatelessWidget {
   const _PositionedCircle({
     required this.dx,
@@ -343,23 +347,16 @@ class _PositionedCircle extends StatelessWidget {
     return Positioned(
       left: dx - diameter / 2,
       top: dy - diameter / 2,
-      child: ShaderMask(
-        shaderCallback: (bounds) {
-          return const RadialGradient(
-            colors: [Colors.transparent, Colors.red],
-            stops: [
-              0.85,
-              0.9,
-            ],
-          ).createShader(bounds);
-        },
-        child: Container(
-          width: diameter,
-          height: diameter,
-          decoration: const BoxDecoration(
+      child: Container(
+        width: diameter,
+        height: diameter,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          border: Border.all(
             color: Colors.red,
-            shape: BoxShape.circle,
+            width: 2,
           ),
+          shape: BoxShape.circle,
         ),
       ),
     );
