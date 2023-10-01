@@ -50,24 +50,48 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(50),
         child: ListView(
           children: [
-            const Gap(32),
-            UnconstrainedBox(
-              child: SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: _displayNameTextEditingController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    icon: Icon(Icons.person),
-                    labelText: 'なまえを入力',
+            Column(
+              children: [
+                Text(
+                  'なまえを入力しよう！',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600],
                   ),
                 ),
-              ),
+                const Gap(12),
+                UnconstrainedBox(
+                  child: SizedBox(
+                    width: 400,
+                    child: TextField(
+                      controller: _displayNameTextEditingController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'なまえを入力',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const Gap(32),
+            Column(
+              children: [
+                Text(
+                  '好きなキャラクターをタップ！',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const Gap(12),
+              ],
+            ),
             iconsAsyncValue.when(
               data: (data) {
                 final icons = data ?? [];
@@ -111,13 +135,21 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                   return _RoomCard(
                     room: room,
                     selectedRoomId: selectedRoomId,
+                    userId: widget.userId,
                   );
                 }).toList();
                 return Column(
                   children: [
                     if (rooms.isNotEmpty) ...[
-                      const Text('間違い探しルームを選択してください'),
-                      const Gap(16)
+                      Text(
+                        '好きな部屋をタップ！',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const Gap(12),
                     ],
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -218,10 +250,15 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
 }
 
 class _RoomCard extends ConsumerWidget {
-  const _RoomCard({required this.room, required this.selectedRoomId});
+  const _RoomCard({
+    required this.room,
+    required this.selectedRoomId,
+    required this.userId,
+  });
 
   final ReadRoom room;
   final ValueNotifier<String?> selectedRoomId;
+  final String userId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -265,24 +302,54 @@ class _RoomCard extends ConsumerWidget {
                                 ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 10,
-                          left: 20,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              spotDifference.name,
-                              style: const TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                      Positioned.fill(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 20,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    spotDifference.name,
+                                    style: const TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  _RoomStatusText(
+                                    roomStatus: room.roomStatus,
+                                  ),
+                                ],
                               ),
-                            ),
-                            _RoomStatusText(roomStatus: room.roomStatus),
-                          ],
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    room.createdByAppUserId,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  if (userId == room.createdByAppUserId)
+                                    const Text(
+                                      'あなたが作成したルームです',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFFFDEB71),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
