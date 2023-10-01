@@ -28,6 +28,7 @@ class MainApp extends ConsumerWidget {
       title: 'Widget Wizards',
       theme: ThemeData(
         useMaterial3: true,
+        colorSchemeSeed: Colors.green,
         sliderTheme: SliderThemeData(
           overlayShape: SliderComponentShape.noOverlay,
         ),
