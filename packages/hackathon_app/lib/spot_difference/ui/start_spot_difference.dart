@@ -121,7 +121,7 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
             roomsAsyncValue.when(
               data: (data) {
                 final rooms = data ?? [];
-                final RoomCards = rooms.map((room) {
+                final roomCards = rooms.map((room) {
                   return _RoomCard(
                     room: room,
                     selectedRoomId: selectedRoomId,
@@ -129,29 +129,29 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                 }).toList();
                 return Column(
                   children: [
-                    if (rooms.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 32),
-                        child: Center(
-                          child: FilledButton(
-                            style: OutlinedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
+                    // if (rooms.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 32),
+                      child: Center(
+                        child: FilledButton(
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                            onPressed: () => Navigator.push<void>(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (context) =>
-                                    CreateRoomUI(userId: widget.userId),
-                                fullscreenDialog: true,
-                              ),
-                            ),
-                            child: const Text('ルームを作成する'),
                           ),
+                          onPressed: () => Navigator.push<void>(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (context) =>
+                                  CreateRoomUI(userId: widget.userId),
+                              fullscreenDialog: true,
+                            ),
+                          ),
+                          child: const Text('ルームを作成する'),
                         ),
                       ),
-                    ...RoomCards,
+                    ),
+                    ...roomCards,
                   ],
                 );
               },
