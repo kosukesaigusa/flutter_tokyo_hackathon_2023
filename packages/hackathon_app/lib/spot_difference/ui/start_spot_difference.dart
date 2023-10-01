@@ -58,6 +58,7 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
           children: [
             Column(
               children: [
+                const Gap(32),
                 Text(
                   'なまえを入力しよう！',
                   style: TextStyle(
