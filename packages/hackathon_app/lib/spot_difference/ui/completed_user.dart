@@ -74,7 +74,7 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                 }
               });
             }
-            final topAnswers = answers.take(10).toList().reversed.toList();
+            final topAnswers = answers.take(10).toList();
 
             return Scaffold(
               backgroundColor: const Color(0xFFFAFAFA),
@@ -145,7 +145,7 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                                     ),
                                   )
                                   .valueOrNull;
-                              final rank = answers.length - (index + 1);
+                              final rank = topAnswers.length - (index + 1);
 
                               // 一番最後までスクロールさせる
                               if (index == _controllers.length - 1) {
