@@ -43,6 +43,14 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final completedAppUsersAsyncValue =
         ref.watch(answeredAppUsersFutureProvider(widget.roomId));
