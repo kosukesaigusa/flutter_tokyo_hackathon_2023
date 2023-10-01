@@ -9,7 +9,6 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../auth/ui/auth_controller.dart';
 import '../spot_difference.dart';
 import 'answer_user_widget.dart';
 import 'progress_time_widget.dart';
@@ -55,38 +54,54 @@ class SpotDifferenceRoom extends ConsumerWidget {
               data: (points) {
                 return Stack(
                   children: [
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                _SpotDifference(
-                                  roomId: roomId,
-                                  answerId: userId,
-                                  answerPoints: points,
-                                  completedPointIds: myAnswer?.pointIds ?? [],
-                                  path: spotDifference.leftImageUrl,
-                                ),
-                                const Gap(20),
-                                _SpotDifference(
-                                  roomId: roomId,
-                                  answerId: userId,
-                                  answerPoints: points,
-                                  completedPointIds: myAnswer?.pointIds ?? [],
-                                  path: spotDifference.rightImageUrl,
-                                ),
-                                _Ranking(
-                                  roomId: roomId,
-                                  spotDifference: spotDifference,
-                                  answers: answers,
-                                ),
-                              ],
-                            ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Row(
+                                children: [
+                                  Icon(Icons.error_outline, color: Colors.red),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    '間違いを見つけて長押ししてね',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Gap(8),
+                              Row(
+                                children: [
+                                  _SpotDifference(
+                                    roomId: roomId,
+                                    answerId: userId,
+                                    answerPoints: points,
+                                    completedPointIds: myAnswer?.pointIds ?? [],
+                                    path: spotDifference.leftImageUrl,
+                                  ),
+                                  const Gap(20),
+                                  _SpotDifference(
+                                    roomId: roomId,
+                                    answerId: userId,
+                                    answerPoints: points,
+                                    completedPointIds: myAnswer?.pointIds ?? [],
+                                    path: spotDifference.rightImageUrl,
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        _Ranking(
+                          roomId: roomId,
+                          spotDifference: spotDifference,
+                          answers: answers,
+                        ),
+                      ],
                     ),
                     if (ref.watch(answerStatusProvider) ==
                         AnswerStatus.restricted)
@@ -109,11 +124,6 @@ class SpotDifferenceRoom extends ConsumerWidget {
                 child: CircularProgressIndicator(),
               ),
             ),
-        // TODO: 開発中にサインアウトできる手段を与えるために一時的に表示している。
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => ref.read(authControllerProvider).signOut(),
-          child: const Icon(Icons.logout),
-        ),
       ),
     );
   }
@@ -471,7 +481,7 @@ class _Ranking extends HookConsumerWidget {
                     .valueOrNull;
                 return AnswerUserWidget(
                   ranking: index + 1,
-                  name: appUser?.displayName ?? '',
+                  name: appUser?.displayName ?? '・・・',
                   imageUrl: appUser?.imageUrl ?? '',
                   answerPoints: answers[index].pointIds.length,
                   totalPoints: spotDifference.pointIds.length,
