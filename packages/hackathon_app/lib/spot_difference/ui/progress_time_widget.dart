@@ -29,12 +29,17 @@ class ProgressTimeWidget extends HookWidget {
           '${second.toString().padLeft(2, '0')}';
     }
 
-    return SizedBox(
+    return Container(
       height: 50,
+      color: Theme.of(context).buttonTheme.colorScheme?.primary ?? Colors.green,
       child: Center(
         child: Text(
           '経過時間:${formatTime(_elapsedSeconds.value)}',
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
     );
