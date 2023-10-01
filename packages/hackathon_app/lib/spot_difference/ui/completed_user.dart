@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../loading/ui/loading.dart';
+import '../../root/ui/root.dart';
 import '../spot_difference.dart';
 
 class CompletedUserScreen extends ConsumerStatefulWidget {
@@ -20,6 +21,7 @@ class CompletedUserScreen extends ConsumerStatefulWidget {
 class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
     with TickerProviderStateMixin {
   final List<AnimationController> _controllers = [];
+  bool canPop = false;
 
   @override
   void initState() {
@@ -28,16 +30,21 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
       () async {
         // 上位10位で決め打ちしている
         for (var i = 0; i < 10; i++) {
-          await Future<void>.delayed(const Duration(seconds: 2));
-          setState(() {
-            _controllers.add(
-              AnimationController(
-                vsync: this,
-                duration: const Duration(seconds: 2),
-              )..forward(),
-            );
-          });
+          {
+            await Future<void>.delayed(const Duration(seconds: 1));
+            setState(() {
+              _controllers.add(
+                AnimationController(
+                  vsync: this,
+                  duration: const Duration(seconds: 2),
+                )..forward(),
+              );
+            });
+          }
         }
+        setState(() {
+          canPop = true;
+        });
       },
     );
   }
@@ -59,14 +66,21 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
         return Scaffold(
           backgroundColor: const Color(0xFFFAFAFA),
           floatingActionButton: ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                canPop ? Colors.orange : Colors.grey,
+              ),
+            ),
             child: const Text('もう一度あそぶ'),
             onPressed: () async {
-              await Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute<void>(
-                  builder: (context) => const RootPage(),
-                ),
-                (route) => false,
-              );
+              if (canPop) {
+                await Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute<void>(
+                    builder: (context) => const RootPage(),
+                  ),
+                  (route) => false,
+                );
+              }
             },
           ),
           body: Stack(
