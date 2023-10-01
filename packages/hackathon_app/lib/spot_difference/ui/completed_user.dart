@@ -69,7 +69,7 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                       child: Text(
                         '結果発表',
                         style: TextStyle(
-                          fontSize: 300,
+                          fontSize: 250,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
