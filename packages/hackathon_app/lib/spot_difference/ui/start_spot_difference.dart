@@ -50,24 +50,48 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(50),
         child: ListView(
           children: [
-            const Gap(32),
-            UnconstrainedBox(
-              child: SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: _displayNameTextEditingController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    icon: Icon(Icons.person),
-                    labelText: 'なまえを入力',
+            Column(
+              children: [
+                Text(
+                  'なまえを入力しよう！',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600],
                   ),
                 ),
-              ),
+                const Gap(12),
+                UnconstrainedBox(
+                  child: SizedBox(
+                    width: 400,
+                    child: TextField(
+                      controller: _displayNameTextEditingController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'なまえを入力',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const Gap(32),
+            Column(
+              children: [
+                Text(
+                  '好きなキャラクターをタップ！',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const Gap(12),
+              ],
+            ),
             iconsAsyncValue.when(
               data: (data) {
                 final icons = data ?? [];
@@ -104,6 +128,66 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
               loading: () => const SizedBox(),
             ),
             const Gap(32),
+            roomsAsyncValue.when(
+              data: (data) {
+                final rooms = data ?? [];
+                final roomCards = rooms.map((room) {
+                  return _RoomCard(
+                    room: room,
+                    selectedRoomId: selectedRoomId,
+                    userId: widget.userId,
+                  );
+                }).toList();
+                return Column(
+                  children: [
+                    if (rooms.isNotEmpty) ...[
+                      Text(
+                        '好きな部屋をタップ！',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const Gap(12),
+                    ],
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [...roomCards],
+                      ),
+                    ),
+                    const Gap(32),
+                    if (rooms.isEmpty || kDebugMode)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: Center(
+                          child: FilledButton(
+                            style: OutlinedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            onPressed: () => Navigator.push<void>(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (context) =>
+                                    CreateRoomUI(userId: widget.userId),
+                                fullscreenDialog: true,
+                              ),
+                            ),
+                            child: const Text('ルームを作成する'),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (_, __) => const SizedBox(),
+            ),
+            const Gap(32),
             Center(
               child: FilledButton(
                 style: OutlinedButton.styleFrom(
@@ -112,7 +196,6 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                   ),
                 ),
                 onPressed: () async {
-                  // ルーム選択なし or 表示名未入力の場合は何もしない
                   final roomId = selectedRoomId.value;
                   final displayName = _displayNameTextEditingController.text;
                   if (roomId == null) {
@@ -159,47 +242,6 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                 child: const Text('参加する'),
               ),
             ),
-            const Gap(32),
-            roomsAsyncValue.when(
-              data: (data) {
-                final rooms = data ?? [];
-                final roomCards = rooms.map((room) {
-                  return _RoomCard(
-                    room: room,
-                    selectedRoomId: selectedRoomId,
-                  );
-                }).toList();
-                return Column(
-                  children: [
-                    if (rooms.isEmpty || kDebugMode)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 32),
-                        child: Center(
-                          child: FilledButton(
-                            style: OutlinedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                            onPressed: () => Navigator.push<void>(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (context) =>
-                                    CreateRoomUI(userId: widget.userId),
-                                fullscreenDialog: true,
-                              ),
-                            ),
-                            child: const Text('ルームを作成する'),
-                          ),
-                        ),
-                      ),
-                    ...roomCards,
-                  ],
-                );
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (_, __) => const SizedBox(),
-            ),
           ],
         ),
       ),
@@ -208,10 +250,15 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
 }
 
 class _RoomCard extends ConsumerWidget {
-  const _RoomCard({required this.room, required this.selectedRoomId});
+  const _RoomCard({
+    required this.room,
+    required this.selectedRoomId,
+    required this.userId,
+  });
 
   final ReadRoom room;
   final ValueNotifier<String?> selectedRoomId;
+  final String userId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -222,63 +269,96 @@ class _RoomCard extends ConsumerWidget {
         if (spotDifference == null) {
           return const SizedBox();
         }
-        return Column(
-          children: [
-            InkWell(
-              onTap: () => selectedRoomId.value = room.roomId,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
-                ),
-                child: Stack(
-                  children: [
-                    GenericImage.rectangle(
-                      imageUrl: spotDifference.thumbnailImageUrl,
-                      maxWidth: 500,
-                    ),
-                    Positioned.fill(
-                      child: ColoredBox(
-                        color: selectedRoomId.value == room.roomId
-                            ? const Color.fromARGB(
-                                158,
-                                226,
-                                218,
-                                61,
-                              )
-                            : const Color.fromARGB(
-                                106,
-                                157,
-                                157,
-                                157,
-                              ),
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            children: [
+              InkWell(
+                onTap: () => selectedRoomId.value = room.roomId,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
+                  child: Stack(
+                    children: [
+                      GenericImage.rectangle(
+                        imageUrl: spotDifference.thumbnailImageUrl,
+                        maxWidth: 500,
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                        left: 20,
+                      Positioned.fill(
+                        child: ColoredBox(
+                          color: selectedRoomId.value == room.roomId
+                              ? const Color.fromARGB(
+                                  158,
+                                  226,
+                                  218,
+                                  61,
+                                )
+                              : const Color.fromARGB(
+                                  106,
+                                  157,
+                                  157,
+                                  157,
+                                ),
+                        ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            spotDifference.name,
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                      Positioned.fill(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 20,
                           ),
-                          _RoomStatusText(roomStatus: room.roomStatus),
-                        ],
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    spotDifference.name,
+                                    style: const TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  _RoomStatusText(
+                                    roomStatus: room.roomStatus,
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    room.createdByAppUserId,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  if (userId == room.createdByAppUserId)
+                                    const Text(
+                                      'あなたが作成したルームです',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFFFDEB71),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const Gap(16),
-          ],
+              const Gap(16),
+            ],
+          ),
         );
       },
       loading: () => const SizedBox(),
