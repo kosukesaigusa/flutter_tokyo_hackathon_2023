@@ -59,35 +59,6 @@ final roomAndSpotDifferencesFutureProvider =
   },
 );
 
-// final spotDifferenceStreamProvider3 = StreamProvider.autoDispose<
-//     List<({ReadRoom room, ReadSpotDifference spotDifference})>?>(
-//   (ref) {
-//     final repository = ref.watch(spotDifferenceRepositoryProvider);
-//     return ref.watch(roomsStreamProvider).when(
-//           data: (rooms) {
-//             if (rooms == null) {
-//               return Stream.value(null);
-//             }
-//             return Stream.value(
-//               rooms.map(
-//                 (room) async {
-//                   final spotDifference = repository.subscribeSpotDifference(
-//                     spotDifferenceId: room.spotDifferenceId,
-//                   );
-//                   return {
-//                     'room': room,
-//                     'spotDifference': spotDifference,
-//                   };
-//                 },
-//               ).toList(),
-//             );
-//           },
-//           error: (_, __) => Stream.value(null),
-//           loading: () => Stream.value(null),
-//         );
-//   },
-// );
-
 /// 指定した `roomId` の [Answer] のリストを返すStreamProvider
 final answersStreamProvider =
     StreamProvider.autoDispose.family<List<ReadAnswer>, String>((ref, roomId) {
@@ -162,6 +133,10 @@ final elapsedTimeProvider = Provider.autoDispose.family<String, String>(
     final elapsedTime = DateTime.now().difference(startTime);
     return elapsedTime.toString().split('.').first;
   },
+);
+
+final iconsSteamProvider = StreamProvider.autoDispose(
+  (ref) => ref.watch(iconRepositoryProvider).subscribeIcons(),
 );
 
 final spotDifferenceServiceProvider =

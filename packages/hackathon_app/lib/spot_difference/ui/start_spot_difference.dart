@@ -46,9 +46,14 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedIconId =
+        useState<String>('3wRejmI9NPn5MoPCYLrI'); // うさぎのIconId
+
     final selectedRoomId = useState<String?>(null);
 
     final roomsAsyncValue = ref.watch(roomsStreamProvider);
+
+    final iconsAsyncValue = ref.watch(iconsSteamProvider);
 
     return Center(
       child: Padding(
@@ -68,6 +73,42 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                   ),
                 ),
               ),
+            ),
+            const Gap(32),
+            iconsAsyncValue.when(
+              data: (data) {
+                final icons = data ?? [];
+                final iconUIs = icons.map((icon) {
+                  final isSelectedIcon = selectedIconId.value == icon.iconId;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Stack(
+                      children: [
+                        GenericImage.circle(
+                          imageUrl: icon.imageUrl,
+                          onTap: () => selectedIconId.value = icon.iconId,
+                          showDetailOnTap: false,
+                        ),
+                        if (isSelectedIcon)
+                          Positioned.fill(
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Color.fromARGB(113, 255, 204, 128),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                }).toList();
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [...iconUIs],
+                );
+              },
+              error: (_, __) => const SizedBox(),
+              loading: () => const SizedBox(),
             ),
             const Gap(32),
             Center(
@@ -93,9 +134,16 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                         .showSnackBar('表示名を入力してください');
                     return;
                   }
+                  final icons = ref.read(iconsSteamProvider).valueOrNull ?? [];
+                  final imageUrl = icons
+                      .firstWhere(
+                        (icon) => icon.iconId == selectedIconId.value,
+                      )
+                      .imageUrl;
                   await ref.read(appUserService).createOrUpdateUser(
                         userId: widget.userId,
                         displayName: displayName,
+                        imageUrl: imageUrl,
                       );
 
                   // 参加時に空のAnswerを作成する
