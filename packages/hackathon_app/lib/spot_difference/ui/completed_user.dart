@@ -51,8 +51,15 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
         return Scaffold(
           backgroundColor: const Color(0xFFFAFAFA),
           floatingActionButton: ElevatedButton(
-            child: const Text('リトライする'),
-            onPressed: () {},
+            child: const Text('もう一度あそぶ'),
+            onPressed: () async {
+              await Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute<void>(
+                  builder: (context) => const RootPage(),
+                ),
+                (route) => false,
+              );
+            },
           ),
           body: Stack(
             children: [
