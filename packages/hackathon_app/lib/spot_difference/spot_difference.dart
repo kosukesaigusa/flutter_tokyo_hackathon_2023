@@ -14,10 +14,10 @@ final _userAnswerStreamProvider = StreamProvider.autoDispose
 });
 
 /// 指定した `userId` に一致する [AppUser] を購読する StreamProvider
-final appUsersFutureProvider =
-    FutureProvider.autoDispose.family<ReadAppUser?, String>(
-  (ref, userId) async {
-    return ref.watch(appUserRepositoryProvider).fetch(userId: userId);
+final appUsersStreamProvider =
+    StreamProvider.autoDispose.family<ReadAppUser?, String>(
+  (ref, userId) {
+    return ref.watch(appUserRepositoryProvider).subscribeUser(userId: userId);
   },
 );
 
