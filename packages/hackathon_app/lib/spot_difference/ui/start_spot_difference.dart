@@ -64,15 +64,15 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                   ),
                 ),
                 const Gap(12),
-                UnconstrainedBox(
-                  child: SizedBox(
-                    width: 400,
-                    child: TextField(
-                      controller: _displayNameTextEditingController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'なまえを入力',
-                      ),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: 200, //最小の横幅
+                  ),
+                  child: TextField(
+                    controller: _displayNameTextEditingController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'なまえを入力',
                     ),
                   ),
                 ),
@@ -119,9 +119,12 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                     ),
                   );
                 }).toList();
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [...iconUIs],
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [...iconUIs],
+                  ),
                 );
               },
               error: (_, __) => const SizedBox(),
