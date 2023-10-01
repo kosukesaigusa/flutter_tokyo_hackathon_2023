@@ -91,7 +91,7 @@ class SpotDifferenceRoom extends ConsumerWidget {
                     if (ref.watch(answerStatusProvider) ==
                         AnswerStatus.restricted)
                       const _AnswerStatusPopUp(
-                        message: '不正解！\n利用禁止中です！',
+                        message: '不正解...',
                         animationPath: 'assets/lottie/loading_slider.json',
                       ),
                     if (ref.watch(answerStatusProvider) ==
@@ -139,7 +139,7 @@ class _AnswerStatusPopUp extends StatelessWidget {
             height: 240,
             padding: const EdgeInsets.symmetric(vertical: 24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).dialogBackgroundColor,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Center(
@@ -149,7 +149,7 @@ class _AnswerStatusPopUp extends StatelessWidget {
                     message,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
