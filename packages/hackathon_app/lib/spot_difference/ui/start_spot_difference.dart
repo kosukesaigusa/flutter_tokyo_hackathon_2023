@@ -111,6 +111,50 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
               loading: () => const SizedBox(),
             ),
             const Gap(32),
+            roomsAsyncValue.when(
+              data: (data) {
+                final rooms = data ?? [];
+                final roomCards = rooms.map((room) {
+                  return _RoomCard(
+                    room: room,
+                    selectedRoomId: selectedRoomId,
+                  );
+                }).toList();
+                return Column(
+                  children: [
+                    Row(
+                      children: [...roomCards],
+                    ),
+                    const Gap(32),
+                    if (rooms.isEmpty || kDebugMode)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: Center(
+                          child: FilledButton(
+                            style: OutlinedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            onPressed: () => Navigator.push<void>(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (context) =>
+                                    CreateRoomUI(userId: widget.userId),
+                                fullscreenDialog: true,
+                              ),
+                            ),
+                            child: const Text('ルームを作成する'),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (_, __) => const SizedBox(),
+            ),
+            const Gap(32),
             Center(
               child: FilledButton(
                 style: OutlinedButton.styleFrom(
@@ -119,7 +163,6 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                   ),
                 ),
                 onPressed: () async {
-                  // ルーム選択なし or 表示名未入力の場合は何もしない
                   final roomId = selectedRoomId.value;
                   final displayName = _displayNameTextEditingController.text;
                   if (roomId == null) {
@@ -165,47 +208,6 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                 },
                 child: const Text('参加する'),
               ),
-            ),
-            const Gap(32),
-            roomsAsyncValue.when(
-              data: (data) {
-                final rooms = data ?? [];
-                final roomCards = rooms.map((room) {
-                  return _RoomCard(
-                    room: room,
-                    selectedRoomId: selectedRoomId,
-                  );
-                }).toList();
-                return Column(
-                  children: [
-                    if (rooms.isEmpty || kDebugMode)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 32),
-                        child: Center(
-                          child: FilledButton(
-                            style: OutlinedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                            onPressed: () => Navigator.push<void>(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (context) =>
-                                    CreateRoomUI(userId: widget.userId),
-                                fullscreenDialog: true,
-                              ),
-                            ),
-                            child: const Text('ルームを作成する'),
-                          ),
-                        ),
-                      ),
-                    ...roomCards,
-                  ],
-                );
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (_, __) => const SizedBox(),
             ),
           ],
         ),
