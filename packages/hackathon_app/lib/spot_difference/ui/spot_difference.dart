@@ -35,7 +35,6 @@ class SpotDifferenceRoom extends ConsumerWidget {
       return const SizedBox();
     }
 
-    // TODO nullable外すか検討
     final answers = ref.watch(answersStreamProvider(roomId)).valueOrNull;
     if (answers == null) {
       return const SizedBox();
