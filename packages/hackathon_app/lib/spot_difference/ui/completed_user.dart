@@ -50,6 +50,10 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
       data: (appUsers) {
         return Scaffold(
           backgroundColor: const Color(0xFFFAFAFA),
+          floatingActionButton: ElevatedButton(
+            child: const Text('リトライする'),
+            onPressed: () {},
+          ),
           body: Stack(
             children: [
               DecoratedBox(
