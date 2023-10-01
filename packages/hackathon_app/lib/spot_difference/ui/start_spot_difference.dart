@@ -45,7 +45,8 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedIconId = useState<String?>(null);
+    final selectedIconId =
+        useState<String>('3wRejmI9NPn5MoPCYLrI'); // うさぎのIconId
 
     final selectedRoomId = useState<String?>(null);
 
