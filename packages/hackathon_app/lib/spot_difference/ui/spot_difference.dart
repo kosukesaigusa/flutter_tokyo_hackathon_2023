@@ -9,7 +9,6 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../auth/ui/auth_controller.dart';
 import '../spot_difference.dart';
 import 'answer_user_widget.dart';
 import 'progress_time_widget.dart';
@@ -124,11 +123,6 @@ class SpotDifferenceRoom extends ConsumerWidget {
                 child: CircularProgressIndicator(),
               ),
             ),
-        // TODO: 開発中にサインアウトできる手段を与えるために一時的に表示している。
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => ref.read(authControllerProvider).signOut(),
-          child: const Icon(Icons.logout),
-        ),
       ),
     );
   }
