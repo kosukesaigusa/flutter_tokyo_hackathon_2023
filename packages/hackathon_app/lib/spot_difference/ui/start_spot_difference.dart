@@ -45,6 +45,8 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedIconId = useState<String?>(null);
+
     final selectedRoomId = useState<String?>(null);
 
     final roomsAsyncValue = ref.watch(roomsStreamProvider);
@@ -69,6 +71,28 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                   ),
                 ),
               ),
+            ),
+            const Gap(32),
+            iconsAsyncValue.when(
+              data: (data) {
+                final icons = data ?? [];
+                final iconUIs = icons.map((icon) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: GenericImage.circle(
+                      imageUrl: icon.imageUrl,
+                      onTap: () => selectedIconId.value = icon.iconId,
+                      showDetailOnTap: false,
+                    ),
+                  );
+                }).toList();
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [...iconUIs],
+                );
+              },
+              error: (_, __) => const SizedBox(),
+              loading: () => const SizedBox(),
             ),
             const Gap(32),
             Center(
