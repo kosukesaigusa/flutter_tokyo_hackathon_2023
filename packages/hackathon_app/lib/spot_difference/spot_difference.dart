@@ -39,26 +39,6 @@ final roomsStreamProvider = StreamProvider.autoDispose<List<ReadRoom>?>((ref) {
   return ref.watch(roomRepositoryProvider).subscribeRooms();
 });
 
-// roomごとのspotDifferenceをとってくる必要あり
-final roomAndSpotDifferencesFutureProvider =
-    FutureProvider.autoDispose<List<(ReadRoom, ReadSpotDifference)>>(
-  (ref) {
-    final rooms = ref.watch(roomsStreamProvider).valueOrNull ?? [];
-    final spotDifferenceRepository =
-        ref.watch(spotDifferenceRepositoryProvider);
-
-    return Future.wait(
-      rooms.map((room) async {
-        final spotDifference =
-            await spotDifferenceRepository.fetchSpotDifference(
-          spotDifferenceId: room.spotDifferenceId,
-        );
-        return (room, spotDifference!);
-      }),
-    );
-  },
-);
-
 /// 指定した `roomId` の [Answer] のリストを返すStreamProvider
 final answersStreamProvider =
     StreamProvider.autoDispose.family<List<ReadAnswer>, String>((ref, roomId) {
@@ -91,16 +71,6 @@ final spotDifferenceFutureProvider = FutureProvider.family
       .watch(spotDifferenceRepositoryProvider)
       .fetchSpotDifference(spotDifferenceId: room.spotDifferenceId);
 });
-
-/// 指定した `roomId` に一致する [Room] の [CompletedUser] のリストを購読する StreamProvider
-final completedUsersStreamProvider =
-    StreamProvider.autoDispose.family<List<ReadCompletedUser>?, String>(
-  (ref, roomId) {
-    return ref
-        .watch(completedUserRepositoryProvider)
-        .subscribeCompletedUsers(roomId: roomId);
-  },
-);
 
 /// [Answer] のリストから [AppUser] のリストを変換する FutureProvider
 final answeredAppUsersFutureProvider =
@@ -135,19 +105,7 @@ final answeredAppUsersFutureProvider =
   },
 );
 
-/// 指定した `roomId` に一致する [Room] の開始時刻から現在時刻までの経過時間を返すプロバイダー
-final elapsedTimeProvider = Provider.autoDispose.family<String, String>(
-  (ref, roomId) {
-    final room = ref.watch(roomStreamProvider(roomId)).valueOrNull;
-    if (room == null || room.startAt == null) {
-      return '';
-    }
-    final startTime = room.startAt!;
-    final elapsedTime = DateTime.now().difference(startTime);
-    return elapsedTime.toString().split('.').first;
-  },
-);
-
+/// [Icon] のリストを購読する StreamProvider
 final iconsSteamProvider = StreamProvider.autoDispose(
   (ref) => ref.watch(iconRepositoryProvider).subscribeIcons(),
 );
