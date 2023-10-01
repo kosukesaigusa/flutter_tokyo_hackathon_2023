@@ -136,7 +136,6 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                           child: ListView.builder(
                             controller: _scrollController,
                             shrinkWrap: true,
-                            reverse: true,
                             itemCount: _controllers.length,
                             itemBuilder: (context, index) {
                               if (index >= topAnswers.length) {
@@ -156,7 +155,7 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                                     ),
                                   )
                                   .valueOrNull;
-                              final rank = topAnswers.length - (index + 1);
+                              final rank = index;
 
                               // 一番最後までスクロールさせる
                               if (index == _controllers.length - 1) {
