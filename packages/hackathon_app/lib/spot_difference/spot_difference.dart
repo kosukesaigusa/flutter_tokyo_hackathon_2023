@@ -102,18 +102,30 @@ final completedUsersStreamProvider =
   },
 );
 
-/// [CompletedUser] のリストから [AppUser] のリストを変換する FutureProvider
-final completedAppUsersFutureProvider =
+/// [Answer] のリストから [AppUser] のリストを変換する FutureProvider
+final answeredAppUsersFutureProvider =
     FutureProvider.autoDispose.family<List<ReadAppUser?>, String>(
   (ref, roomId) async {
     final appUserRepository = ref.watch(appUserRepositoryProvider);
-    final completedUsers =
-        ref.watch(completedUsersStreamProvider(roomId)).valueOrNull ?? [];
+    final answers = ref.watch(answersStreamProvider(roomId)).valueOrNull ?? [];
+    // ignore: cascade_invocations
+    answers.sort((a, b) {
+      // pointIdsのサイズに基づいて比較
+      final compareSize = b.pointIds.length.compareTo(a.pointIds.length);
+      if (compareSize != 0) {
+        return compareSize;
+      }
+
+      // updatedAtに基づいて比較
+      final aUpdatedAt = a.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bUpdatedAt = b.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bUpdatedAt.compareTo(aUpdatedAt);
+    });
     return Future.wait(
-      completedUsers
+      answers
           .map(
             (user) async {
-              return appUserRepository.fetch(userId: user.completedUserId);
+              return appUserRepository.fetch(userId: user.answerId);
             },
           )
           .toList()
