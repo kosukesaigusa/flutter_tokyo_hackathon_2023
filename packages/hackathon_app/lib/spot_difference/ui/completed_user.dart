@@ -76,6 +76,17 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
             }
             final topAnswers = answers.take(10).toList();
 
+            final width = MediaQuery.of(context).size.width;
+
+            double fontSize;
+            if (width < 1015) {
+              fontSize = 200;
+            } else if (width < 850) {
+              fontSize = 70;
+            } else {
+              fontSize = 250;
+            }
+
             return Scaffold(
               backgroundColor: const Color(0xFFFAFAFA),
               floatingActionButton: ElevatedButton(
@@ -111,11 +122,11 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                     ),
                     child: Stack(
                       children: [
-                        const Center(
+                        Center(
                           child: Text(
                             '結果発表',
                             style: TextStyle(
-                              fontSize: 250,
+                              fontSize: fontSize,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
