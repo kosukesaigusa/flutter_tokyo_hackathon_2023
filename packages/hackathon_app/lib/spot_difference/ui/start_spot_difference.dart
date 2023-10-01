@@ -1,5 +1,6 @@
 import 'package:dart_flutter_common/dart_flutter_common.dart';
 import 'package:firebase_common/firebase_common.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
@@ -129,28 +130,28 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                 }).toList();
                 return Column(
                   children: [
-                    // if (rooms.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 32),
-                      child: Center(
-                        child: FilledButton(
-                          style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                    if (rooms.isEmpty || kDebugMode)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: Center(
+                          child: FilledButton(
+                            style: OutlinedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
                             ),
-                          ),
-                          onPressed: () => Navigator.push<void>(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder: (context) =>
-                                  CreateRoomUI(userId: widget.userId),
-                              fullscreenDialog: true,
+                            onPressed: () => Navigator.push<void>(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (context) =>
+                                    CreateRoomUI(userId: widget.userId),
+                                fullscreenDialog: true,
+                              ),
                             ),
+                            child: const Text('ルームを作成する'),
                           ),
-                          child: const Text('ルームを作成する'),
                         ),
                       ),
-                    ),
                     ...roomCards,
                   ],
                 );
