@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../loading/ui/loading.dart';
+import '../../root/ui/root.dart';
 import '../spot_difference.dart';
 
 class CompletedUserScreen extends ConsumerStatefulWidget {
@@ -20,6 +21,7 @@ class CompletedUserScreen extends ConsumerStatefulWidget {
 class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
     with TickerProviderStateMixin {
   final List<AnimationController> _controllers = [];
+  bool canPop = false;
 
   @override
   void initState() {
@@ -28,7 +30,7 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
       () async {
         // 上位10位で決め打ちしている
         for (var i = 0; i < 10; i++) {
-          await Future<void>.delayed(const Duration(seconds: 2));
+          await Future<void>.delayed(const Duration(seconds: 1));
           setState(() {
             _controllers.add(
               AnimationController(
@@ -38,8 +40,19 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
             );
           });
         }
+        setState(() {
+          canPop = true;
+        });
       },
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
   }
 
   @override
@@ -50,6 +63,24 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
       data: (appUsers) {
         return Scaffold(
           backgroundColor: const Color(0xFFFAFAFA),
+          floatingActionButton: ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                canPop ? Colors.orange : Colors.grey,
+              ),
+            ),
+            child: const Text('もう一度あそぶ'),
+            onPressed: () async {
+              if (canPop) {
+                await Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute<void>(
+                    builder: (context) => const RootPage(),
+                  ),
+                  (route) => false,
+                );
+              }
+            },
+          ),
           body: Stack(
             children: [
               DecoratedBox(
@@ -69,7 +100,7 @@ class CompletedUserScreenState extends ConsumerState<CompletedUserScreen>
                       child: Text(
                         '結果発表',
                         style: TextStyle(
-                          fontSize: 300,
+                          fontSize: 250,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
