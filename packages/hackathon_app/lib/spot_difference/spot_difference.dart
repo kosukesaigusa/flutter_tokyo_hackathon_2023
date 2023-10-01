@@ -72,39 +72,6 @@ final spotDifferenceFutureProvider = FutureProvider.family
       .fetchSpotDifference(spotDifferenceId: room.spotDifferenceId);
 });
 
-/// [Answer] のリストから [AppUser] のリストを変換する FutureProvider
-final answeredAppUsersFutureProvider =
-    FutureProvider.autoDispose.family<List<ReadAppUser?>, String>(
-  (ref, roomId) async {
-    final appUserRepository = ref.watch(appUserRepositoryProvider);
-    final answers = ref.watch(answersStreamProvider(roomId)).valueOrNull ?? [];
-    // ignore: cascade_invocations
-    answers.sort((a, b) {
-      // pointIdsのサイズに基づいて比較
-      final compareSize = b.pointIds.length.compareTo(a.pointIds.length);
-      if (compareSize != 0) {
-        return compareSize;
-      }
-
-      // updatedAtに基づいて比較
-      final aUpdatedAt = a.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-      final bUpdatedAt = b.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-      return bUpdatedAt.compareTo(aUpdatedAt);
-    });
-    return Future.wait(
-      answers
-          .take(10)
-          .map(
-            (user) async {
-              return appUserRepository.fetch(userId: user.answerId);
-            },
-          )
-          .toList()
-          .reversed,
-    );
-  },
-);
-
 /// [Icon] のリストを購読する StreamProvider
 final iconsSteamProvider = StreamProvider.autoDispose(
   (ref) => ref.watch(iconRepositoryProvider).subscribeIcons(),

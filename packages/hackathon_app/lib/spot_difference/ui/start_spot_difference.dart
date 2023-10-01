@@ -49,8 +49,11 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
     final iconsAsyncValue = ref.watch(iconsSteamProvider);
 
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(50),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minWidth: 200, //最小の横幅
+          maxWidth: 600,
+        ),
         child: ListView(
           children: [
             Column(
@@ -64,9 +67,11 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                   ),
                 ),
                 const Gap(12),
-                ConstrainedBox(
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   constraints: const BoxConstraints(
                     minWidth: 200, //最小の横幅
+                    maxWidth: 500,
                   ),
                   child: TextField(
                     controller: _displayNameTextEditingController,
@@ -119,12 +124,10 @@ class StartSpotDifferenceUIState extends ConsumerState<StartSpotDifferenceUI> {
                     ),
                   );
                 }).toList();
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [...iconUIs],
-                  ),
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [...iconUIs],
                 );
               },
               error: (_, __) => const SizedBox(),
